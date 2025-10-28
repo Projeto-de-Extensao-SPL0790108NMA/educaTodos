@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import { API_URL } from "../../services/api";
 import { useState } from "react";
 import {
   Container,
@@ -8,16 +10,49 @@ import {
   Button,
   Typography,
   Paper,
+  Alert,
 } from "@mui/material";
-
 export default function Login() {
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
-
-  const handleSubmit = (e) => {
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+  const router = useRouter();
+  
+  console.log("API_URL =", API_URL);
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Lógica de login aqui
-    console.log("Login enviado:", { matricula, password });
+    setErr("");
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${API_URL}/api/auth/token/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          username: matricula.trim(), // <-- alteração necessária
+          password 
+        }),
+      });
+
+      if (!res.ok) {
+        const msg = await res.text();
+        throw new Error(msg || `Erro ${res.status}`);
+      }
+
+      const data = await res.json(); // ex: { access, refresh, user }
+
+      localStorage.setItem("access", data.access || "");
+      localStorage.setItem("refresh", data.refresh || "");
+      localStorage.setItem("user", JSON.stringify(data.user || null));
+
+      router.push("/");
+    } catch (e) {
+      console.error("Erro no login:", e);
+      setErr("Falha no login. Verifique matrícula/usuário e senha ou tente novamente.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -81,6 +116,7 @@ export default function Login() {
               type="submit"
               fullWidth
               variant="contained"
+              disabled={loading}
               sx={{
                 mt: 2,
                 mb: 3,
@@ -91,7 +127,7 @@ export default function Login() {
                 },
               }}
             >
-              Entrar
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
           </Box>
         </Paper>
