@@ -19,7 +19,6 @@ export default function Login() {
   const [err, setErr] = useState("");
   const router = useRouter();
   
-  console.log("API_URL =", API_URL);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErr("");
@@ -30,7 +29,7 @@ export default function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          username: matricula.trim(), // <-- alteração necessária
+          username: matricula.trim(),
           password 
         }),
       });
@@ -40,7 +39,7 @@ export default function Login() {
         throw new Error(msg || `Erro ${res.status}`);
       }
 
-      const data = await res.json(); // ex: { access, refresh, user }
+      const data = await res.json();
 
       localStorage.setItem("access", data.access || "");
       localStorage.setItem("refresh", data.refresh || "");
@@ -116,7 +115,6 @@ export default function Login() {
               type="submit"
               fullWidth
               variant="contained"
-              disabled={loading}
               sx={{
                 mt: 2,
                 mb: 3,
@@ -127,7 +125,7 @@ export default function Login() {
                 },
               }}
             >
-              {loading ? "Entrando..." : "Entrar"}
+              Entrar
             </Button>
           </Box>
         </Paper>
