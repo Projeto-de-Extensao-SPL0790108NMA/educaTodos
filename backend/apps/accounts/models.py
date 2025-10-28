@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 
 
 class Inmate(models.Model):
-    """Perfil do detento. Credencial fica no User (username = matrícula)."""
+    #Perfil do detento. Credencial fica no User (username = matrícula).
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="inmate")
 
