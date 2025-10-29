@@ -1,8 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { API_URL } from "../../services/api";
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import {
   Container,
   Box,
@@ -10,48 +8,16 @@ import {
   Button,
   Typography,
   Paper,
-  Alert,
 } from "@mui/material";
+
 export default function Login() {
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState("");
-  const router = useRouter();
-  
-  const handleSubmit = async (e) => {
+
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setErr("");
-    setLoading(true);
-
-    try {
-      const res = await fetch(`${API_URL}/api/auth/token/`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          username: matricula.trim(),
-          password 
-        }),
-      });
-
-      if (!res.ok) {
-        const msg = await res.text();
-        throw new Error(msg || `Erro ${res.status}`);
-      }
-
-      const data = await res.json();
-
-      localStorage.setItem("access", data.access || "");
-      localStorage.setItem("refresh", data.refresh || "");
-      localStorage.setItem("user", JSON.stringify(data.user || null));
-
-      router.push("/");
-    } catch (e) {
-      console.error("Erro no login:", e);
-      setErr("Falha no login. Verifique matrícula/usuário e senha ou tente novamente.");
-    } finally {
-      setLoading(false);
-    }
+    // Lógica de login aqui
+    console.log("Login enviado:", { matricula, password });
   };
 
   return (
