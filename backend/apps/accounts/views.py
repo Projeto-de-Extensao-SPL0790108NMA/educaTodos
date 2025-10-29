@@ -30,12 +30,13 @@ class ChangePasswordView(generics.UpdateAPIView):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def user_me(request):
-    
-    #Retorna os dados do usuário autenticado.
+    """Retorna os dados do usuário autenticado."""
     user = request.user
     return Response({
         "id": user.id,
         "username": user.username,
         "email": user.email,
         "role": getattr(user, "role", "USER"),
+        "is_staff": user.is_staff,
+        "is_superuser": user.is_superuser,
     })

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import {
   Container,
   Box,
@@ -9,15 +10,42 @@ import {
   Typography,
   Paper,
 } from "@mui/material";
+import { API_URL } from "@/services/api";
 
 export default function Login() {
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // Lógica de autenticação: envia credenciais e persiste tokens
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // Lógica de login aqui
-    console.log("Login enviado:", { matricula, password });
+
+    try {
+      // POST para autenticação com matrícula e senha
+      const response = await fetch(`${API_URL}/api/auth/token/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: matricula, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || errorData.message || "Erro ao fazer login");
+      }
+
+      const { access, refresh } = await response.json();
+
+      // Persiste tokens no localStorage e cookie
+      localStorage.setItem("access", access);
+      localStorage.setItem("refresh", refresh);
+      document.cookie = `access=${access}; Path=/; SameSite=Lax`;
+
+      router.push("/");
+    } catch (error) {
+      console.error("Erro no login:", error);
+      alert(error instanceof Error ? error.message : "Erro ao fazer login");
+    }
   };
 
   return (
