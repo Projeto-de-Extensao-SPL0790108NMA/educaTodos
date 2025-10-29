@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import {
   Container,
   Box,
@@ -14,7 +14,7 @@ export default function Login() {
   const [matricula, setMatricula] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     // Lógica de login aqui
     console.log("Login enviado:", { matricula, password });
