@@ -20,7 +20,7 @@ EducaTodos é um projeto que visa proporcionar uma plataforma de aprendizado col
 3. Instale as dependências do backend:
    ```bash
    pip install -r backend/requirements.txt
-   ```
+   ```S
 4. Inicie o servidor:
    ```bash
    python backend/manage.py runserver
