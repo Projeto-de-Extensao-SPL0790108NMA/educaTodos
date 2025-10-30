@@ -6,6 +6,7 @@ import { theme } from "./theme";
 import MainLayout from "./components/MainLayout";
 import { ThemeProvider } from "@emotion/react";
 import { usePathname } from "next/navigation";
+import { AuthProvider } from "@/providers/AuthProvider";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -23,9 +24,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={poppins.className}>
       <body>
+        <AuthProvider>
           <ThemeProvider theme={theme}>
             {isAuthPage ? children : <MainLayout>{children}</MainLayout>}
           </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

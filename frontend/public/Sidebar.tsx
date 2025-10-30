@@ -16,10 +16,13 @@ import {
   HatIcon, 
   GraphIcon, 
   BookIcon, 
-  ChevronLeftIcon
+  ChevronLeftIcon,
+  UserAddIcon
 } from '../public/icons/IconSB';
 
 import { useSidebar } from '../src/app/components/SidebarContext';
+import { useAuth } from '../src/providers/AuthProvider';
+import { useRouter } from 'next/navigation';
 
 
 // Criar funções que retornam imagens usando o mesmo padrão do `logo.svg` (component='img')
@@ -39,6 +42,9 @@ const Icons = {
   ChevronLeftIcon: (props = {}) => (
     <Box component="img" src={ChevronLeftIcon} alt="chevron-left" sx={{ width: 24, height: 'auto' }} {...props} />
   ),
+  UserAddIcon: (props = {}) => (
+    <Box component="img" src={UserAddIcon} alt="user-add" sx={{ width: 24, height: 'auto' }} {...props} />
+  ),
 };
 
 const drawerWidth = 280;
@@ -48,14 +54,35 @@ export default function Sidebar() {
   const {
     open,
     toggleSidebar,
-  } = useSidebar ();
+  } = useSidebar();
+  const { user } = useAuth();
+  const router = useRouter();
+
+  // Verifica se o usuário é staff (admin)
+  const isAdmin = user && user.is_staff;
 
   const menuItems = [
-  { text: "Início", icon: Icons.HouseIcon() },
-  { text: "Meus Certificados", icon: Icons.HatIcon() },
-  { text: "Meu Desempenho", icon: Icons.GraphIcon() },
-  { text: "Cursando", icon: Icons.BookIcon() },
-];
+    { text: "Início", icon: Icons.HouseIcon() },
+    { text: "Meus Certificados", icon: Icons.HatIcon() },
+    { text: "Meu Desempenho", icon: Icons.GraphIcon() },
+    { text: "Cursando", icon: Icons.BookIcon() },
+  ];
+
+  // Adiciona item de admin apenas se for staff
+  if (isAdmin) {
+    menuItems.push({ 
+      text: "Cadastro de Detentos", 
+      icon: Icons.UserAddIcon()
+    });
+  }
+
+  const handleItemClick = (text: string) => {
+    if (text === "Cadastro de Detentos") {
+      router.push('/adicionar');
+      toggleSidebar();
+    }
+    // Adicione navegação para outros itens aqui conforme necessário
+  };
 
   return (
     <Drawer
@@ -110,9 +137,14 @@ export default function Sidebar() {
         <List>
           {menuItems.map((item, index) => (
             <ListItem 
-              key={index} 
+              key={index}
+              onClick={() => handleItemClick(item.text)}
               sx={{
                 justifyContent: open ? 'initial' : 'center',
+                cursor: 'pointer',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                },
               }}
             >
               <ListItemIcon 
