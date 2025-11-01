@@ -8,7 +8,6 @@ import {
   DialogActions,
   TextField,
   FormControl,
-  InputLabel,
   Select,
   MenuItem,
   Button,
@@ -126,8 +125,19 @@ export default function EditInmateModal({
   }
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Editar Aluno</DialogTitle>
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      maxWidth="sm" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          backgroundColor: '#EDEDED',
+          color: '#000000',
+          border: '1px solid #000000'
+        }
+      }}
+    >
       <DialogContent>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -135,78 +145,224 @@ export default function EditInmateModal({
           </Alert>
         )}
 
-        <TextField
-          fullWidth
-          label="Nome Completo"
-          name="full_name"
-          value={editFormData.full_name}
-          onChange={handleEditFormChange}
-          margin="normal"
-          required
-        />
+        <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1, color: '#000000', fontSize: '14px', fontWeight: 400 }}>
+            NOME DO ALUNO
+          </Box>
+          <TextField
+            fullWidth
+            name="full_name"
+            value={editFormData.full_name}
+            onChange={handleEditFormChange}
+            required
+            sx={{
+              '& .MuiInputBase-root': {
+                color: '#000000',
+                backgroundColor: '#FFFFFF'
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              }
+            }}
+          />
+        </Box>
 
-        <TextField
-          fullWidth
-          label="Matrícula"
-          value={inmate?.matricula || ''}
-          margin="normal"
-          disabled
-          helperText="A matrícula não pode ser alterada"
-        />
+        <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1, color: '#000000', fontSize: '14px', fontWeight: 400 }}>
+            MATRÍCULA
+          </Box>
+          <TextField
+            fullWidth
+            value={inmate?.matricula || ''}
+            disabled
+            helperText="A matrícula não pode ser alterada"
+            sx={{
+              '& .MuiInputBase-root': {
+                color: '#000000',
+                backgroundColor: '#FFFFFF'
+              },
+              '& .MuiInputBase-input.Mui-disabled': {
+                WebkitTextFillColor: '#000000',
+                color: '#000000'
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiOutlinedInput-root.Mui-disabled .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiFormHelperText-root': {
+                color: '#000000'
+              },
+              '& .MuiFormHelperText-root.Mui-disabled': {
+                color: '#000000'
+              }
+            }}
+          />
+        </Box>
 
-        <TextField
-          fullWidth
-          label="Nova Senha (opcional)"
-          name="password"
-          type="password"
-          value={editFormData.password}
-          onChange={handleEditFormChange}
-          margin="normal"
-          helperText="Deixe em branco para não alterar a senha"
-        />
+        <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1, color: '#000000', fontSize: '14px', fontWeight: 400 }}>
+            NOVA SENHA
+          </Box>
+          <TextField
+            fullWidth
+            name="password"
+            type="password"
+            value={editFormData.password}
+            onChange={handleEditFormChange}
+            helperText="Deixe em branco para não alterar a senha(opcional)"
+            sx={{
+              '& .MuiInputBase-root': {
+                color: '#000000',
+                backgroundColor: '#FFFFFF'
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiFormHelperText-root': {
+                color: '#000000'
+              }
+            }}
+          />
+        </Box>
 
-        <TextField
-          fullWidth
-          label="Confirmar Nova Senha"
-          name="confirmPassword"
-          type="password"
-          value={editFormData.confirmPassword}
-          onChange={handleEditFormChange}
-          margin="normal"
-        />
+        <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1, color: '#000000', fontSize: '14px', fontWeight: 400 }}>
+            CONFIRMAR NOVA SENHA
+          </Box>
+          <TextField
+            fullWidth
+            name="confirmPassword"
+            type="password"
+            value={editFormData.confirmPassword}
+            onChange={handleEditFormChange}
+            sx={{
+              '& .MuiInputBase-root': {
+                color: '#000000',
+                backgroundColor: '#FFFFFF'
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              },
+              '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                borderColor: '#000000'
+              }
+            }}
+          />
+        </Box>
 
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Status</InputLabel>
-          <Select
-            value={editFormData.must_change_password ? 'provisoria' : 'ativo'}
-            onChange={handleStatusChange}
-            label="Status"
-          >
-            <MenuItem value="ativo">Ativo</MenuItem>
-            <MenuItem value="provisoria">Senha Provisória</MenuItem>
-          </Select>
-        </FormControl>
+        <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 1, color: '#000000', fontSize: '14px', fontWeight: 400 }}>
+            STATUS
+          </Box>
+          <FormControl fullWidth>
+            <Select
+              value={editFormData.must_change_password ? 'provisoria' : 'ativo'}
+              onChange={handleStatusChange}
+              sx={{
+                color: '#000000',
+                backgroundColor: '#FFFFFF',
+                '& .MuiSelect-icon': {
+                  color: '#000000'
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#000000'
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#000000'
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#000000'
+                }
+              }}
+            >
+              <MenuItem value="ativo">Ativo</MenuItem>
+              <MenuItem value="provisoria">Senha Provisória</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: 'space-between', px: 3, pb: 2 }}>
+      <DialogActions sx={{ 
+        display: 'flex',
+        flexDirection: 'column', 
+        alignItems: 'stretch',
+        justifyContent: 'center',
+        px: 3, 
+        pb: 3, 
+        gap: 2,
+        '& > *': {
+          marginLeft: 'auto !important',
+          marginRight: 'auto !important'
+        }
+      }}>
+        <Button 
+          onClick={handleSave} 
+          variant="contained" 
+          disabled={submitting}
+          sx={{
+            width: '200px',
+            minWidth: '200px',
+            maxWidth: '200px',
+            margin: '0 auto',
+            backgroundColor: '#1F1D2B',
+            color: '#FFFFFF',
+            fontFamily: 'Poppins',
+            fontWeight: 500,
+            textAlign: 'center',
+            justifyContent: 'center',
+            '&:hover': {
+              backgroundColor: '#2a2836'
+            },
+            '&:disabled': {
+              backgroundColor: '#1F1D2B',
+              opacity: 0.6
+            }
+          }}
+        >
+          {submitting ? 'Salvando...' : 'Confirmar'}
+        </Button>
         <Button 
           onClick={handleDelete} 
-          color="error"
+          variant="contained"
           disabled={submitting}
+          sx={{
+            width: '200px',
+            minWidth: '200px',
+            maxWidth: '200px',
+            margin: '0 auto',
+            backgroundColor: '#6B1515',
+            color: '#FFFFFF',
+            fontFamily: 'Poppins',
+            fontWeight: 500,
+            textAlign: 'center',
+            justifyContent: 'center',
+            '&:hover': {
+              backgroundColor: '#8a1c1c'
+            },
+            '&:disabled': {
+              backgroundColor: '#6B1515',
+              opacity: 0.6
+            }
+          }}
         >
-          Deletar Aluno
+          Deletar
         </Button>
-        <Box>
-          <Button onClick={onClose} disabled={submitting} sx={{ mr: 1 }}>
-            Cancelar
-          </Button>
-          <Button 
-            onClick={handleSave} 
-            variant="contained" 
-            disabled={submitting}
-          >
-            {submitting ? 'Salvando...' : 'Salvar'}
-          </Button>
-        </Box>
       </DialogActions>
     </Dialog>
   )
