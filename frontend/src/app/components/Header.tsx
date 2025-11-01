@@ -8,7 +8,11 @@ import { useSidebar } from './SidebarContext';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
 
-export default function Header() {
+interface HeaderProps {
+  isAdmin?: boolean;
+}
+
+export default function Header({ isAdmin }: HeaderProps) {
   const { toggleSidebar } = useSidebar();
   const { logout } = useAuth();
   const router = useRouter();
@@ -46,10 +50,10 @@ export default function Header() {
     <ThemeProvider theme={theme}>
     <AppBar 
       position="fixed"
+      className={isAdmin ? 'admin-header' : undefined}
       sx={{
-        //backgroundColor: 'transparent',
         boxShadow: 'none',
-        p: 2,
+        p: 1,
       }} 
     >
       <Toolbar>
@@ -57,49 +61,50 @@ export default function Header() {
           onClick={toggleSidebar}
           sx={{
             '& img': {
-              width: 40,
+              width: 60,
               height: 'auto',
               cursor: 'pointer',
             }
           }}
         >
           <img
-            src='/logo.svg'
+            src='/Logo.png'
             alt='Logo'
           />
         </IconButton>
-
-        <Box
-          sx={{
-            flexGrow: 1,
-            display: "flex",
-            alignItems: "center",
-            backgroundColor: "#383838ff",
-            borderRadius: 60,
-            px: 2,
-            ml: 180,
-            width: 10,
-          }}
-        >
-          <img
-            src='/search.svg'
-            alt='Search'
-            style={{
-              width: '24px',
-              height: 'auto',
-              marginRight: '8px'
+        {!isAdmin && (
+          <Box
+            sx={{
+              flexGrow: 1,
+              display: "flex",
+              alignItems: "center",
+              backgroundColor: "#383838ff",
+              borderRadius: 60,
+              px: 2,
+              ml: 180,
+              width: 10,
             }}
-          />
-          <InputBase
-            placeholder="Buscar cursos..."
-            sx={{ 
-              ml: 1, 
-              flex: 1,
-              color: '#fff',
-            }}
-          />
-        </Box>
-
+          >
+            <img
+              src='/search.svg'
+              alt='Search'
+              style={{
+                width: '24px',
+                height: 'auto',
+                marginRight: '8px'
+              }}
+            />
+            <InputBase
+              placeholder="Buscar cursos..."
+              sx={{ 
+                ml: 1, 
+                flex: 1,
+                color: '#fff',
+              }}
+            />
+          </Box>
+        )}
+        <Box sx={{ flexGrow: 1 }} />
         <IconButton 
           color="inherit" 
           onClick={handleClick}
@@ -112,11 +117,12 @@ export default function Header() {
           }}
         >
           <img
-            src='/perfil.svg'
+            src={isAdmin ? '/perfil.svg' : '/perfil.svg'}
             alt='Profile'
             style={{
               width: '44px',
-              height: 'auto'
+              height: 'auto',
+              filter: isAdmin ? 'brightness(0) invert(1)' : 'none'
             }}
           />
         </IconButton>
