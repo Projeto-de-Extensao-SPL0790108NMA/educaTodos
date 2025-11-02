@@ -26,7 +26,7 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR" className={poppins.className}>
-      <body>
+      <body suppressHydrationWarning>
         <AuthProvider>
           <ThemeProvider theme={theme}>
             <AdminRouteGuard>
