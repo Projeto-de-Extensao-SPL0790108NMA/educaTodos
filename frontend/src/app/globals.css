@@ -1,6 +1,6 @@
 :root {
   --background: #ededed;
-  --foreground: #171717;
+  --foreground: #1F1D2B;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -26,7 +26,7 @@ body {
 }
 
 body.admin-bg {
-  background: #ededed !important;
+  background: #fff !important;
 }
 
 .admin-header {

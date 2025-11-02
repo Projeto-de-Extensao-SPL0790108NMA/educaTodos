@@ -96,6 +96,8 @@ export default function Sidebar() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
+          backgroundColor: isAdmin ? '#1F1D2B' : undefined,
+          color: isAdmin ? '#FFFFFF' : undefined,
           //p: 2,
         },
       }}
@@ -115,7 +117,7 @@ export default function Sidebar() {
               src='/Logo.png'
               alt='Logo'
               sx={{
-                width: open ? 40:40,
+                width: 50,
                 height: 'auto',
                 transition: 'width 0.3s ease',
                 cursor: 'pointer',
@@ -124,7 +126,10 @@ export default function Sidebar() {
             />   
           {open && (
             <Typography variant="h5"
-              sx={{ ml: 2 }}>
+              sx={{ 
+                ml: 2,
+                color: isAdmin ? '#FFFFFF' : undefined 
+              }}>
               {isAdmin ? 'Painel de Controle' : 'Painel do Aluno'}
             </Typography>
           )}
@@ -138,14 +143,17 @@ export default function Sidebar() {
               sx={{
                 justifyContent: open ? 'initial' : 'center',
                 cursor: 'pointer',
+                color: isAdmin ? '#FFFFFF' : undefined,
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  backgroundColor: isAdmin ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.08)',
                 },
               }}
             >
               <ListItemIcon 
                 sx={{
-                  justifyContent: 'center', minWidth: open ? 40 : 'auto',
+                  justifyContent: 'center', 
+                  minWidth: open ? 40 : 'auto',
+                  color: isAdmin ? '#FFFFFF' : undefined,
                 }}
               >
                 {item.icon}
@@ -162,7 +170,12 @@ export default function Sidebar() {
               textAlign: 'right',
             }}
           >
-            <IconButton onClick={toggleSidebar}>
+            <IconButton 
+              onClick={toggleSidebar}
+              sx={{
+                color: isAdmin ? '#FFFFFF' : undefined
+              }}
+            >
               {Icons.ChevronLeftIcon()}
             </IconButton>
           </Box> 

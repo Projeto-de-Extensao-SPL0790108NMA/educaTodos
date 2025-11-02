@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isAuthPage = pathname?.includes("/login") || pathname?.includes("/adicionar");
+  const isAuthPage = pathname?.includes("/login");
 
   return (
     <html lang="pt-BR" className={poppins.className}>

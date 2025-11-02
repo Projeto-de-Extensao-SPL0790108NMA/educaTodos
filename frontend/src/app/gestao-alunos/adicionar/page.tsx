@@ -8,30 +8,24 @@ import {
   TextField,
   Button,
   Alert,
-  Paper
+  Paper,
+  Link as MuiLink,
+  Dialog,
+  DialogContent,
+  DialogActions
 } from '@mui/material'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/providers/AuthProvider'
 import { apiFetch } from '@/services/apiClient'
 
-/**
- * Página para adicionar novos alunos (detentos) ao sistema.
- * 
- * Funcionalidades:
- * - Proteção de rota (apenas usuários autenticados)
- * - Máscara automática dd/mm/aaaa para data de nascimento
- * - Validação realista de data (idade entre 10 e 120 anos)
- * - Validação completa de campos conforme backend
- * - Exibição da matrícula gerada após criação
- * 
- * Nota: O backend atual não persiste birth_date (apenas full_name e password).
- * A data é validada no frontend para futura integração.
- */
+
 export default function AdicionarAlunoPage() {
   const { user, loading } = useAuth()
+  const router = useRouter()
 
   const [formData, setFormData] = useState({
     nome: '',
-    dataNascimento: '',
     senha: '',
     confirmSenha: ''
   })
@@ -40,128 +34,23 @@ export default function AdicionarAlunoPage() {
   const [success, setSuccess] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [createdInmate, setCreatedInmate] = useState<{ name: string; registration_number: string; password: string } | null>(null)
-
-  // Aplica máscara dd/mm/aaaa automaticamente
-  const applyDateMask = (value: string): string => {
-    const numbers = value.replace(/\D/g, '')
-    if (numbers.length <= 2) return numbers
-    if (numbers.length <= 4) return `${numbers.slice(0, 2)}/${numbers.slice(2)}`
-    return `${numbers.slice(0, 2)}/${numbers.slice(2, 4)}/${numbers.slice(4, 8)}`
-  }
-
-  // Converte dd/mm/aaaa para aaaa-mm-dd
-  const convertToISO = (dateStr: string): string => {
-    if (!dateStr) return ''
-    if (dateStr.includes('-')) return dateStr // Já está no formato ISO
-    
-    const parts = dateStr.split('/')
-    if (parts.length === 3) {
-      const [day, month, year] = parts
-      return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`
-    }
-    return dateStr
-  }
-
-  // Valida data no formato dd/mm/aaaa com verificações rigorosas
-  const isValidDate = (dateStr: string): { valid: boolean; message?: string } => {
-    if (!dateStr || dateStr.length !== 10) {
-      return { valid: false, message: 'Data incompleta. Use dd/mm/aaaa' }
-    }
-    
-    const parts = dateStr.split('/')
-    if (parts.length !== 3) {
-      return { valid: false, message: 'Formato inválido. Use dd/mm/aaaa' }
-    }
-    
-    const [day, month, year] = parts.map(Number)
-    
-    // Verifica se são números válidos
-    if (isNaN(day) || isNaN(month) || isNaN(year) || !day || !month || !year) {
-      return { valid: false, message: 'Data inválida - use apenas números' }
-    }
-    
-    // Validações de limites realistas
-    const currentYear = new Date().getFullYear()
-    const currentDate = new Date()
-    const minYear = 1920 // Idade máxima realista (103 anos em 2023)
-    const maxYear = currentYear - 16 // Mínimo 16 anos de idade para detentos
-    
-    if (year < minYear) {
-      return { valid: false, message: `Ano muito antigo. Use ano a partir de ${minYear}` }
-    }
-    
-    if (year > maxYear) {
-      return { valid: false, message: `Idade mínima de 16 anos. Use ano até ${maxYear}` }
-    }
-    
-    // Validação de mês
-    if (month < 1 || month > 12) {
-      return { valid: false, message: 'Mês inválido. Use valores de 1 a 12' }
-    }
-    
-    // Validação rigorosa de dias por mês (com ano bissexto)
-    const isLeapYear = (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0
-    const daysInMonth = [
-      31, // Janeiro
-      isLeapYear ? 29 : 28, // Fevereiro
-      31, // Março
-      30, // Abril
-      31, // Maio
-      30, // Junho
-      31, // Julho
-      31, // Agosto
-      30, // Setembro
-      31, // Outubro
-      30, // Novembro
-      31  // Dezembro
-    ]
-    
-    const maxDaysForMonth = daysInMonth[month - 1]
-    
-    if (day < 1 || day > maxDaysForMonth) {
-      const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
-                          'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-      return { 
-        valid: false, 
-        message: `${monthNames[month - 1]} tem apenas ${maxDaysForMonth} dias` 
-      }
-    }
-    
-    // Cria objeto Date e valida se é uma data real
-    const birthDate = new Date(year, month - 1, day)
-    
-    // Verifica se o objeto Date criou uma data válida
-    // (JavaScript pode criar datas inválidas que precisam ser checadas)
-    if (birthDate.getDate() !== day || 
-        birthDate.getMonth() !== month - 1 || 
-        birthDate.getFullYear() !== year) {
-      return { valid: false, message: 'Data inexistente no calendário' }
-    }
-    
-    // Verifica se a data não é futura
-    if (birthDate > currentDate) {
-      return { valid: false, message: 'Data de nascimento não pode ser futura' }
-    }
-    
-    // Verifica se a data não é muito recente (menos de 16 anos)
-    const sixteenYearsAgo = new Date()
-    sixteenYearsAgo.setFullYear(currentYear - 16)
-    if (birthDate > sixteenYearsAgo) {
-      return { valid: false, message: 'Idade mínima de 16 anos não atingida' }
-    }
-    
-    return { valid: true }
-  }
+  const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     
-    if (name === 'dataNascimento') {
-      const masked = applyDateMask(value)
-      setFormData(prev => ({ ...prev, [name]: masked }))
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }))
-    }
+    setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleCreateAnother = () => {
+    setShowSuccessModal(false)
+    setCreatedInmate(null)
+    setSuccess(null)
+    // O formulário já foi limpo no handleSubmit
+  }
+
+  const handleGoToManagement = () => {
+    router.push('/gestao-alunos')
   }
 
   const validar = () => {
@@ -171,15 +60,6 @@ export default function AdicionarAlunoPage() {
       newErrors.nome = 'Nome completo é obrigatório.'
     } else if (formData.nome.trim().length < 3) {
       newErrors.nome = 'Nome deve ter pelo menos 3 caracteres.'
-    }
-    
-    if (!formData.dataNascimento) {
-      newErrors.dataNascimento = 'Data de Nascimento é obrigatória.'
-    } else {
-      const dateValidation = isValidDate(formData.dataNascimento)
-      if (!dateValidation.valid) {
-        newErrors.dataNascimento = dateValidation.message || 'Data inválida.'
-      }
     }
     
     if (!formData.senha) {
@@ -226,11 +106,11 @@ export default function AdicionarAlunoPage() {
           registration_number: response.matricula || 'N/A',
           password: formData.senha // Salva a senha para exibir
         })
+        setShowSuccessModal(true)
 
         // Limpa o formulário
         setFormData({
           nome: '',
-          dataNascimento: '',
           senha: '',
           confirmSenha: ''
         })
@@ -261,31 +141,119 @@ export default function AdicionarAlunoPage() {
   }
 
   return (
-    <Container maxWidth="sm">
-      <Box sx={{ mt: 4, mb: 4 }}>
-        <Typography variant="h4" component="h1" gutterBottom>
-          Gestão de Alunos &gt; Adicionar novo aluno
-        </Typography>
+    <Box sx={{ backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mt: 4, mb: 4 }}>
+          <Box sx={{ mb: 3 }}>
+            <Link href="/gestao-alunos" passHref legacyBehavior>
+              <MuiLink 
+              sx={{ 
+                color: '#000000',
+                textDecoration: 'none',
+                '&:hover': {
+                textDecoration: 'underline'
+                }
+              }}
+              >
+              <Typography variant="h4" component="span" sx={{ color: '#000000', fontFamily: 'Poppins', fontWeight: 700, fontSize: '30px' }}>
+                GESTÃO DE ALUNOS
+              </Typography>
+              </MuiLink>
+            </Link>
+            <Typography variant="h4" component="span" sx={{ color: '#000000', fontFamily: 'Poppins', fontWeight: 700, fontSize: '30px' }}>
+              {' > ADICIONAR NOVO ALUNO'}
+            </Typography>
+          </Box>
 
-        {success && createdInmate && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            <Typography variant="body1" sx={{ mb: 1 }}>
-              <strong>✓ Aluno criado com sucesso!</strong>
+        {/* Modal de Sucesso */}
+        <Dialog 
+          open={showSuccessModal} 
+          onClose={() => {}}
+          maxWidth="sm" 
+          fullWidth
+          PaperProps={{
+            sx: {
+              backgroundColor: '#EDEDED',
+              color: '#000000',
+              border: '2px solid #000000',
+              borderRadius: 2
+            }
+          }}
+        >
+          <DialogContent sx={{ pt: 4 }}>
+            <Typography variant="h5" sx={{ mb: 3, color: '#000000', fontFamily: 'Poppins', fontWeight: 600, textAlign: 'center' }}>
+              ✓ Aluno criado com sucesso!
             </Typography>
-            <Typography variant="body2">
-              <strong>Nome:</strong> {createdInmate.name}
-            </Typography>
-            <Typography variant="body2">
-              <strong>Matrícula gerada:</strong> {createdInmate.registration_number}
-            </Typography>
-            <Typography variant="body2" sx={{ mt: 1, color: 'warning.main' }}>
-              <strong>Senha criada:</strong> {createdInmate.password}
-            </Typography>
-            <Typography variant="caption" sx={{ display: 'block', mt: 1, fontStyle: 'italic' }}>
-              ⚠️ Guarde essa senha! Ela não será exibida novamente.
-            </Typography>
-          </Alert>
-        )}
+            
+            {createdInmate && (
+              <Box sx={{ mb: 2 }}>
+                <Typography sx={{ mb: 1, color: '#000000', fontFamily: 'Poppins', fontWeight: 400 }}>
+                  <strong>Nome:</strong> {createdInmate.name}
+                </Typography>
+                <Typography sx={{ mb: 1, color: '#000000', fontFamily: 'Poppins', fontWeight: 400 }}>
+                  <strong>Matrícula gerada:</strong> {createdInmate.registration_number}
+                </Typography>
+                <Typography sx={{ mb: 2, color: '#000000', fontFamily: 'Poppins', fontWeight: 400 }}>
+                  <strong>Senha criada:</strong> {createdInmate.password}
+                </Typography>
+                <Typography variant="caption" sx={{ display: 'block', color: '#6B1515', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'italic' }}>
+                  ⚠️ Guarde essa senha! Ela não será exibida novamente.
+                </Typography>
+              </Box>
+            )}
+          </DialogContent>
+          <DialogActions sx={{ 
+            flexDirection: 'column', 
+            alignItems: 'stretch',
+            justifyContent: 'center',
+            px: 3, 
+            pb: 3, 
+            gap: 2,
+            '& > *': {
+              marginLeft: 'auto !important',
+              marginRight: 'auto !important'
+            }
+          }}>
+            <Button 
+              onClick={handleGoToManagement}
+              variant="contained"
+              sx={{
+                width: '250px',
+                margin: '0 auto',
+                backgroundColor: '#1F1D2B',
+                color: '#FFFFFF',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: 500,
+                textAlign: 'center',
+                justifyContent: 'center',
+                '&:hover': {
+                  backgroundColor: '#2a2836'
+                }
+              }}
+            >
+              Ir para Gestão de Alunos
+            </Button>
+            <Button 
+              onClick={handleCreateAnother}
+              variant="contained"
+              sx={{
+                width: '250px',
+                margin: '0 auto',
+                backgroundColor: '#1F1D2B',
+                color: '#FFFFFF',
+                fontFamily: 'Poppins, sans-serif',
+                fontWeight: 500,
+                textAlign: 'center',
+                justifyContent: 'center',
+                '&:hover': {
+                  backgroundColor: '#2a2836'
+                }
+              }}
+            >
+              Criar Outro Aluno
+            </Button>
+          </DialogActions>
+        </Dialog>
 
         {errors.api && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -293,77 +261,154 @@ export default function AdicionarAlunoPage() {
           </Alert>
         )}
 
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{ p: 3, backgroundColor: '#EDEDED', borderRadius: 2, width: '80%', mx: 'auto' }}>
           <Box 
             component="form" 
             onSubmit={handleSubmit} 
             noValidate 
             sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
           >
-            <TextField
-              id="nome"
-              name="nome"
-              label="Nome do aluno"
-              fullWidth
-              value={formData.nome}
-              onChange={handleChange}
-              error={!!errors.nome}
-              helperText={errors.nome}
-            />
+            <Box>
+              <Typography sx={{ mb: 1, color: '#000000', fontSize: '15px', fontWeight: 400, fontFamily: 'Poppins' }}>
+                Nome do aluno
+              </Typography>
+              <TextField
+                id="nome"
+                name="nome"
+                fullWidth
+                value={formData.nome}
+                onChange={handleChange}
+                error={!!errors.nome}
+                helperText={errors.nome}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    backgroundColor: '#FFFFFF',
+                    color: '#000000',
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: 400
+                  },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: '#000000',
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: 400
+                  }
+                }}
+              />
+            </Box>
 
-            <TextField
-              id="dataNascimento"
-              name="dataNascimento"
-              label="Data de Nascimento (dd/mm/aaaa)"
-              type="text"
-              fullWidth
-              value={formData.dataNascimento}
-              onChange={handleChange}
-              error={!!errors.dataNascimento}
-              helperText={errors.dataNascimento || 'Digite no formato dd/mm/aaaa'}
-              placeholder="dd/mm/aaaa"
-              inputProps={{ maxLength: 10 }}
-            />
+            <Box>
+              <Typography sx={{ mb: 1, color: '#000000', fontSize: '15px', fontWeight: 400, fontFamily: 'Poppins' }}>
+                Senha de Acesso
+              </Typography>
+              <TextField
+                id="senha"
+                name="senha"
+                type="password"
+                fullWidth
+                value={formData.senha}
+                onChange={handleChange}
+                error={!!errors.senha}
+                helperText={errors.senha}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    backgroundColor: '#FFFFFF',
+                    color: '#000000',
+                    fontFamily: 'Poppins',
+                    fontWeight: 400
+                  },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: '#000000',
+                    fontFamily: 'Poppins',
+                    fontWeight: 400
+                  }
+                }}
+              />
+            </Box>
 
-            <TextField
-              id="senha"
-              name="senha"
-              label="Senha de Acesso"
-              type="password"
-              fullWidth
-              value={formData.senha}
-              onChange={handleChange}
-              error={!!errors.senha}
-              helperText={errors.senha}
-            />
+            <Box>
+              <Typography sx={{ mb: 1, color: '#000000', fontSize: '15px', fontWeight: 400, fontFamily: 'Poppins' }}>
+                Confirmar senha
+              </Typography>
+              <TextField
+                id="confirmSenha"
+                name="confirmSenha"
+                type="password"
+                fullWidth
+                value={formData.confirmSenha}
+                onChange={handleChange}
+                error={!!errors.confirmSenha}
+                helperText={errors.confirmSenha}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    backgroundColor: '#FFFFFF',
+                    color: '#000000',
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: 400
+                  },
+                  '& .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                    borderColor: '#000000'
+                  },
+                  '& .MuiFormHelperText-root': {
+                    color: '#000000',
+                    fontFamily: 'Poppins, sans-serif',
+                    fontWeight: 400
+                  }
+                }}
+              />
+            </Box>
 
-            <TextField
-              id="confirmSenha"
-              name="confirmSenha"
-              label="Confirmar senha"
-              type="password"
-              fullWidth
-              value={formData.confirmSenha}
-              onChange={handleChange}
-              error={!!errors.confirmSenha}
-              helperText={errors.confirmSenha}
-            />
-
-            <Box sx={{ mt: 2 }}>
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
               <Button
                 type="submit"
                 variant="contained"
-                color="primary"
-                fullWidth
                 size="large"
                 disabled={submitting}
+                sx={{
+                  width: '200px',
+                  backgroundColor: '#1F1D2B',
+                  color: '#FFFFFF',
+                  fontFamily: 'Poppins, sans-serif',
+                  fontWeight: 500,
+                  '&:hover': {
+                    backgroundColor: '#2a2836'
+                  },
+                  '&:disabled': {
+                    backgroundColor: '#1F1D2B',
+                    opacity: 0.6
+                  }
+                }}
               >
-                {submitting ? 'Adicionando...' : 'Adicionar Aluno'}
+                {submitting ? 'Enviando...' : 'Enviar'}
               </Button>
             </Box>
           </Box>
         </Paper>
-      </Box>
-    </Container>
+        </Box>
+      </Container>
+    </Box>
   )
 }
