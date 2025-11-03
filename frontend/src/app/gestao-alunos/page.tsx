@@ -52,6 +52,8 @@ export default function GestaoAlunosPage() {
   const [submitting, setSubmitting] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterOption, setFilterOption] = useState('a-z')
+  const [page, setPage] = useState(0)
+  const [rowsPerPage] = useState(10)
   const router = useRouter()
 
   useEffect(() => {
@@ -174,6 +176,18 @@ export default function GestaoAlunosPage() {
   }
 
   const filteredInmates = getFilteredAndSortedInmates()
+  
+  // Paginação
+  const paginatedInmates = filteredInmates.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  )
+  
+  const totalPages = Math.ceil(filteredInmates.length / rowsPerPage)
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage)
+  }
 
   if (loading) {
     return (
@@ -186,8 +200,8 @@ export default function GestaoAlunosPage() {
   }
 
   return (
-    <Container maxWidth="lg">
-      <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography 
           variant="h4" 
           component="h1"
@@ -229,7 +243,7 @@ export default function GestaoAlunosPage() {
       <Box sx={{ backgroundColor: '#EDEDED', padding: 3, borderRadius: 2 }}>
         {/* Filtros e Busca */}
         <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-        <FormControl sx={{ minWidth: 250 }}>
+        <FormControl sx={{ minWidth: 250 }} size="small">
             <InputLabel 
             sx={{ 
               fontFamily: 'Poppins',
@@ -276,10 +290,11 @@ export default function GestaoAlunosPage() {
           placeholder="Buscar"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          size="small"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-          <SearchIcon sx={{ color: '#1F1D2B' }} />
+          <SearchIcon sx={{ color: '#1F1D2B', fontSize: '20px' }} />
               </InputAdornment>
             ),
             sx: {
@@ -316,24 +331,24 @@ export default function GestaoAlunosPage() {
             </Box>
 
         <TableContainer component={Paper}>
-        <Table>
+        <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontFamily: 'Poppins'}}><strong>Nome Completo</strong></TableCell>
-              <TableCell sx={{ fontFamily: 'Poppins'}}><strong>Matrícula</strong></TableCell>
-              <TableCell sx={{ fontFamily: 'Poppins'}}><strong>Status</strong></TableCell>
-              <TableCell align="center" sx={{ fontFamily: 'Poppins'}}><strong>Ações</strong></TableCell>
+                <TableCell sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}><strong>Nome Completo</strong></TableCell>
+                <TableCell sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}><strong>Matrícula</strong></TableCell>
+                <TableCell sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}><strong>Status</strong></TableCell>
+                <TableCell align="center" sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}><strong>Ações</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredInmates.length === 0 ? (
+            {paginatedInmates.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} align="center" sx={{ fontFamily: 'Poppins', color: '#000000' }}>
+                <TableCell colSpan={4} align="center" sx={{ fontFamily: 'Poppins', color: '#000000', padding: '8px 16px' }}>
                   Nenhum aluno encontrado
                 </TableCell>
               </TableRow>
             ) : (
-              filteredInmates.map((inmate, index) => (
+              paginatedInmates.map((inmate, index) => (
                 <TableRow 
                   key={inmate.id} 
                   hover
@@ -341,10 +356,10 @@ export default function GestaoAlunosPage() {
                     backgroundColor: index % 2 === 0 ? '#D9D9D9' : '#FFFFFF'
                   }}
                 >
-                  <TableCell sx={{ fontFamily: 'Poppins', color: '#000000' }}>{inmate.full_name}</TableCell>
-                  <TableCell sx={{ fontFamily: 'Poppins', color: '#000000' }}>{inmate.matricula}</TableCell>
-                  <TableCell sx={{ fontFamily: 'Poppins', color: '#000000' }}>{inmate.status}</TableCell>
-                  <TableCell align="center">
+                  <TableCell sx={{ fontFamily: 'Poppins', color: '#000000', padding: '8px 16px' }}>{inmate.full_name}</TableCell>
+                  <TableCell sx={{ fontFamily: 'Poppins', color: '#000000', padding: '8px 16px' }}>{inmate.matricula}</TableCell>
+                  <TableCell sx={{ fontFamily: 'Poppins', color: '#000000', padding: '8px 16px' }}>{inmate.status}</TableCell>
+                  <TableCell align="center" sx={{ padding: '8px 16px' }}>
                     <IconButton
                       onClick={() => handleEditStudent(inmate)}
                       sx={{
@@ -368,6 +383,106 @@ export default function GestaoAlunosPage() {
           </TableBody>
         </Table>
       </TableContainer>
+      
+      {/* Paginação */}
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          mt: 2,
+          mb: 2
+        }}
+      >
+        <Typography 
+          sx={{ 
+            fontFamily: 'Poppins', 
+            color: '#000000',
+            fontSize: '14px'
+          }}
+        >
+          Página {page + 1} de {totalPages === 0 ? 1 : totalPages} ({filteredInmates.length} alunos)
+        </Typography>
+        
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            onClick={() => handleChangePage(0)}
+            disabled={page === 0}
+            sx={{
+              minWidth: '40px',
+              backgroundColor: '#1F1D2B',
+              color: '#FFFFFF',
+              fontFamily: 'Poppins',
+              '&:hover': {
+                backgroundColor: '#2a2838'
+              },
+              '&:disabled': {
+                backgroundColor: '#D9D9D9',
+                color: '#666666'
+              }
+            }}
+          >
+            {'<<'}
+          </Button>
+          <Button
+            onClick={() => handleChangePage(page - 1)}
+            disabled={page === 0}
+            sx={{
+              minWidth: '40px',
+              backgroundColor: '#1F1D2B',
+              color: '#FFFFFF',
+              fontFamily: 'Poppins',
+              '&:hover': {
+                backgroundColor: '#2a2838'
+              },
+              '&:disabled': {
+                backgroundColor: '#D9D9D9',
+                color: '#666666'
+              }
+            }}
+          >
+            {'<'}
+          </Button>
+          <Button
+            onClick={() => handleChangePage(page + 1)}
+            disabled={page >= totalPages - 1}
+            sx={{
+              minWidth: '40px',
+              backgroundColor: '#1F1D2B',
+              color: '#FFFFFF',
+              fontFamily: 'Poppins',
+              '&:hover': {
+                backgroundColor: '#2a2838'
+              },
+              '&:disabled': {
+                backgroundColor: '#D9D9D9',
+                color: '#666666'
+              }
+            }}
+          >
+            {'>'}
+          </Button>
+          <Button
+            onClick={() => handleChangePage(totalPages - 1)}
+            disabled={page >= totalPages - 1}
+            sx={{
+              minWidth: '40px',
+              backgroundColor: '#1F1D2B',
+              color: '#FFFFFF',
+              fontFamily: 'Poppins',
+              '&:hover': {
+                backgroundColor: '#2a2838'
+              },
+              '&:disabled': {
+                backgroundColor: '#D9D9D9',
+                color: '#666666'
+              }
+            }}
+          >
+            {'>>'}
+          </Button>
+        </Box>
+      </Box>
       </Box>
 
       {/* Modal de Edição */}
