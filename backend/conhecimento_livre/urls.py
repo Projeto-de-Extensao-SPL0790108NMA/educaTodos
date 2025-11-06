@@ -1,5 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -12,4 +14,11 @@ urlpatterns = [
 
     # Módulo de contas (detentos)
     path("api/accounts/", include("apps.accounts.urls")),
+    
+    # Módulo de cursos
+    path("api/courses/", include("apps.courses.urls")),
 ]
+
+# Serve media files in development
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

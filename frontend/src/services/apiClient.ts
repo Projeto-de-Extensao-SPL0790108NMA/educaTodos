@@ -28,7 +28,12 @@ async function refreshToken(): Promise<string> {
 export async function apiFetch<T = any>(path: string, options: RequestInit = {}): Promise<T> {
   const url = path.startsWith("http") ? path : `${API_URL}${path}`;
 
-  const headers: HeadersInit = { "Content-Type": "application/json", ...(options.headers || {}) };
+  // Detecta se o body é FormData para não adicionar Content-Type (o browser define automaticamente com boundary)
+  const isFormData = options.body instanceof FormData;
+  
+  const headers: HeadersInit = isFormData 
+    ? { ...(options.headers || {}) }
+    : { "Content-Type": "application/json", ...(options.headers || {}) };
 
   // Tenta recuperar access token do localStorage (apenas em browser).
   const access = typeof window !== "undefined" ? localStorage.getItem("access") : null;
@@ -46,7 +51,40 @@ export async function apiFetch<T = any>(path: string, options: RequestInit = {})
 
   const data = await res.json().catch(() => ({}));
 
-  if (!res.ok) throw new Error((data && (data.detail || data.message)) || `Erro ${res.status}`);
+  if (!res.ok) {
+    // Tentar extrair mensagens de erro detalhadas
+    let errorMessage = '';
+    
+    if (data && typeof data === 'object') {
+      // Se houver erros de campo específicos
+      if (data.errors || data.non_field_errors) {
+        const errors = data.errors || data.non_field_errors;
+        if (Array.isArray(errors)) {
+          errorMessage = errors.join(', ');
+        } else if (typeof errors === 'object') {
+          errorMessage = Object.entries(errors)
+            .map(([field, msgs]: [string, any]) => 
+              `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`
+            )
+            .join('; ');
+        }
+      } else if (data.detail) {
+        errorMessage = data.detail;
+      } else if (data.message) {
+        errorMessage = data.message;
+      } else {
+        // Tentar pegar o primeiro erro de qualquer campo
+        const firstError = Object.entries(data)
+          .find(([key, value]) => key !== 'status' && value);
+        if (firstError) {
+          const [field, msgs] = firstError;
+          errorMessage = `${field}: ${Array.isArray(msgs) ? msgs[0] : msgs}`;
+        }
+      }
+    }
+    
+    throw new Error(errorMessage || `Erro ${res.status}`);
+  }
 
   return data as T;
 }
