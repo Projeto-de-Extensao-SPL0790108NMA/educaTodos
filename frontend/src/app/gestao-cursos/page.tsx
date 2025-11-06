@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import {
   Box,
   Button,
@@ -15,7 +16,16 @@ import {
   Chip,
   CircularProgress,
   Alert,
+  Container,
+  TextField,
+  InputAdornment,
+  IconButton,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/services/apiClient';
 
@@ -24,8 +34,6 @@ interface Course {
   titulo: string;
   categoria: string;
   grau_dificuldade: string;
-  total_sections: number;
-  total_lessons: number;
   is_active: boolean;
   created_at: string;
 }
@@ -35,6 +43,10 @@ export default function GestaoCursosPage() {
   const [cursos, setCursos] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterOption, setFilterOption] = useState('a-z');
+  const [page, setPage] = useState(0);
+  const [rowsPerPage] = useState(10);
 
   useEffect(() => {
     fetchCursos();
@@ -78,43 +90,83 @@ export default function GestaoCursosPage() {
     }
   };
 
+  // Filtrar e ordenar cursos
+  const getFilteredAndSortedCursos = () => {
+    let filtered = cursos.filter((curso) =>
+      curso.titulo.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    switch (filterOption) {
+      case 'a-z':
+        filtered.sort((a, b) => a.titulo.localeCompare(b.titulo));
+        break;
+      case 'z-a':
+        filtered.sort((a, b) => b.titulo.localeCompare(a.titulo));
+        break;
+      case 'categoria':
+        filtered.sort((a, b) => a.categoria.localeCompare(b.categoria));
+        break;
+      case 'iniciante':
+        filtered = filtered.filter((curso) => curso.grau_dificuldade === 'iniciante');
+        break;
+      case 'intermediario':
+        filtered = filtered.filter((curso) => curso.grau_dificuldade === 'intermediario');
+        break;
+      case 'avancado':
+        filtered = filtered.filter((curso) => curso.grau_dificuldade === 'avancado');
+        break;
+      case 'ativo':
+        filtered = filtered.filter((curso) => curso.is_active === true);
+        break;
+      case 'inativo':
+        filtered = filtered.filter((curso) => curso.is_active === false);
+        break;
+      default:
+        break;
+    }
+
+    return filtered;
+  };
+
+  const filteredCursos = getFilteredAndSortedCursos();
+
+  // Paginação
+  const paginatedCursos = filteredCursos.slice(
+    page * rowsPerPage,
+    page * rowsPerPage + rowsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredCursos.length / rowsPerPage);
+
+  const handleChangePage = (newPage: number) => {
+    setPage(newPage);
+  };
+
   if (loading) {
     return (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          minHeight: '400px',
-        }}
-      >
-        <CircularProgress sx={{ color: '#1F1D2B' }} />
-      </Box>
+      <Container>
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+          <CircularProgress />
+        </Box>
+      </Container>
     );
   }
 
   return (
-    <Box sx={{ padding: 4 }}>
-      {/* Cabeçalho */}
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 3,
-        }}
-      >
+    <Container maxWidth="lg" sx={{ mt: 4 }}>
+      <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography
           variant="h4"
+          component="h1"
           sx={{
+            color: '#1F1D2B',
             fontFamily: 'Poppins',
-            fontWeight: 600,
-            color: '#000000',
+            fontWeight: 700,
+            fontSize: '40px',
           }}
         >
           Gestão de Cursos
         </Typography>
-
         <Button
           variant="contained"
           onClick={() => router.push('/gestao-cursos/criar')}
@@ -123,215 +175,320 @@ export default function GestaoCursosPage() {
             color: '#FFFFFF',
             fontFamily: 'Poppins',
             fontWeight: 500,
+            fontSize: '24px',
             textTransform: 'none',
-            padding: '10px 30px',
             '&:hover': {
-              backgroundColor: '#2d2a3d',
+              backgroundColor: '#2a2838',
             },
           }}
         >
-          + Criar Curso
+          Criar Curso
         </Button>
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ marginBottom: 2 }}>
+        <Alert severity="error" sx={{ mb: 3 }}>
           {error}
         </Alert>
       )}
 
-      {/* Tabela de Cursos */}
-      <TableContainer
-        component={Paper}
-        sx={{
-          boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)',
-        }}
-      >
-        <Table>
-          <TableHead>
-            <TableRow sx={{ backgroundColor: '#1F1D2B' }}>
-              <TableCell
-                sx={{
-                  color: '#FFFFFF',
-                  fontFamily: 'Poppins',
-                  fontWeight: 600,
-                }}
-              >
-                Título
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: '#FFFFFF',
-                  fontFamily: 'Poppins',
-                  fontWeight: 600,
-                }}
-              >
+      {/* Box com fundo #EDEDED contendo filtros e tabela */}
+      <Box sx={{ backgroundColor: '#EDEDED', padding: 3, borderRadius: 2 }}>
+        {/* Filtros e Busca */}
+        <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+          <FormControl sx={{ minWidth: 250 }} size="small">
+            <InputLabel
+              sx={{
+                fontFamily: 'Poppins',
+                color: '#000000',
+                '&.Mui-focused': { color: '#1F1D2B' },
+              }}
+            >
+              Filtrar por
+            </InputLabel>
+            <style>
+              {`
+                .MuiSelect-icon {
+                  color: #000000 !important;
+                }
+              `}
+            </style>
+            <Select
+              value={filterOption}
+              label="Filtrar por"
+              onChange={(e) => setFilterOption(e.target.value)}
+              sx={{
+                fontFamily: 'Poppins',
+                color: '#000000',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#1F1D2B',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#1F1D2B',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#1F1D2B',
+                },
+              }}
+            >
+              <MenuItem value="a-z" sx={{ fontFamily: 'Poppins' }}>
+                Alfabética (A-Z)
+              </MenuItem>
+              <MenuItem value="z-a" sx={{ fontFamily: 'Poppins' }}>
+                Alfabética (Z-A)
+              </MenuItem>
+              <MenuItem value="categoria" sx={{ fontFamily: 'Poppins' }}>
                 Categoria
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: '#FFFFFF',
-                  fontFamily: 'Poppins',
-                  fontWeight: 600,
-                }}
-              >
-                Dificuldade
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: '#FFFFFF',
-                  fontFamily: 'Poppins',
-                  fontWeight: 600,
-                }}
-                align="center"
-              >
-                Seções
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: '#FFFFFF',
-                  fontFamily: 'Poppins',
-                  fontWeight: 600,
-                }}
-                align="center"
-              >
-                Aulas
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: '#FFFFFF',
-                  fontFamily: 'Poppins',
-                  fontWeight: 600,
-                }}
-                align="center"
-              >
-                Status
-              </TableCell>
-              <TableCell
-                sx={{
-                  color: '#FFFFFF',
-                  fontFamily: 'Poppins',
-                  fontWeight: 600,
-                }}
-                align="center"
-              >
-                Ações
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {cursos.length === 0 ? (
+              </MenuItem>
+              <MenuItem value="iniciante" sx={{ fontFamily: 'Poppins' }}>
+                Dificuldade: Iniciante
+              </MenuItem>
+              <MenuItem value="intermediario" sx={{ fontFamily: 'Poppins' }}>
+                Dificuldade: Intermediário
+              </MenuItem>
+              <MenuItem value="avancado" sx={{ fontFamily: 'Poppins' }}>
+                Dificuldade: Avançado
+              </MenuItem>
+              <MenuItem value="ativo" sx={{ fontFamily: 'Poppins' }}>
+                Status: Ativo
+              </MenuItem>
+              <MenuItem value="inativo" sx={{ fontFamily: 'Poppins' }}>
+                Status: Inativo
+              </MenuItem>
+            </Select>
+          </FormControl>
+
+          <TextField
+            placeholder="Buscar"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: '#1F1D2B', fontSize: '20px' }} />
+                </InputAdornment>
+              ),
+              sx: {
+                fontFamily: 'Poppins',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#1F1D2B',
+                },
+                '&:hover .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#1F1D2B',
+                },
+                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#1F1D2B',
+                },
+              },
+            }}
+            InputLabelProps={{
+              sx: { color: '#000000' },
+            }}
+            inputProps={{
+              style: { color: '#000000' },
+            }}
+            FormHelperTextProps={{
+              sx: { color: '#000000' },
+            }}
+            sx={{
+              minWidth: 300,
+              '& .MuiInputBase-input::placeholder': {
+                color: '#000000',
+                opacity: 1,
+                fontFamily: 'Poppins',
+              },
+            }}
+          />
+        </Box>
+
+        <TableContainer component={Paper}>
+          <Table size="small">
+            <TableHead>
               <TableRow>
-                <TableCell colSpan={7} align="center">
-                  <Typography
-                    sx={{
-                      fontFamily: 'Poppins',
-                      color: '#666',
-                      padding: 3,
-                    }}
-                  >
-                    Nenhum curso cadastrado. Clique em "Criar Curso" para
-                    começar.
-                  </Typography>
+                <TableCell sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}>
+                  <strong>Título</strong>
+                </TableCell>
+                <TableCell sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}>
+                  <strong>Categoria</strong>
+                </TableCell>
+                <TableCell sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}>
+                  <strong>Dificuldade</strong>
+                </TableCell>
+                <TableCell align="center" sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}>
+                  <strong>Status</strong>
+                </TableCell>
+                <TableCell align="center" sx={{ fontFamily: 'Poppins', padding: '8px 16px', color: '#fff' }}>
+                  <strong>Ações</strong>
                 </TableCell>
               </TableRow>
-            ) : (
-              cursos.map((curso, index) => (
-                <TableRow
-                  key={curso.id}
-                  sx={{
-                    backgroundColor: index % 2 === 0 ? '#D9D9D9' : '#FFFFFF',
-                  }}
-                >
-                  <TableCell
-                    sx={{
-                      fontFamily: 'Poppins',
-                      color: '#000000',
-                    }}
-                  >
-                    {curso.titulo}
-                  </TableCell>
-                  <TableCell
-                    sx={{
-                      fontFamily: 'Poppins',
-                      color: '#000000',
-                    }}
-                  >
-                    {curso.categoria}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={getDificuldadeLabel(curso.grau_dificuldade)}
-                      sx={{
-                        backgroundColor: getDificuldadeColor(
-                          curso.grau_dificuldade
-                        ),
-                        color: '#FFFFFF',
-                        fontFamily: 'Poppins',
-                        fontWeight: 500,
-                        fontSize: '12px',
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      fontFamily: 'Poppins',
-                      color: '#000000',
-                    }}
-                  >
-                    {curso.total_sections}
-                  </TableCell>
-                  <TableCell
-                    align="center"
-                    sx={{
-                      fontFamily: 'Poppins',
-                      color: '#000000',
-                    }}
-                  >
-                    {curso.total_lessons}
-                  </TableCell>
-                  <TableCell align="center">
-                    <Chip
-                      label={curso.is_active ? 'Ativo' : 'Inativo'}
-                      sx={{
-                        backgroundColor: curso.is_active
-                          ? '#2C5F2D'
-                          : '#999999',
-                        color: '#FFFFFF',
-                        fontFamily: 'Poppins',
-                        fontWeight: 500,
-                        fontSize: '12px',
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      onClick={() =>
-                        router.push(`/gestao-cursos/editar/${curso.id}`)
-                      }
-                      sx={{
-                        borderColor: '#1F1D2B',
-                        color: '#1F1D2B',
-                        fontFamily: 'Poppins',
-                        textTransform: 'none',
-                        '&:hover': {
-                          borderColor: '#1F1D2B',
-                          backgroundColor: 'rgba(31, 29, 43, 0.04)',
-                        },
-                      }}
-                    >
-                      Ver Detalhes
-                    </Button>
+            </TableHead>
+            <TableBody>
+              {paginatedCursos.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} align="center" sx={{ fontFamily: 'Poppins', color: '#000000', padding: '8px 16px' }}>
+                    Nenhum curso encontrado
                   </TableCell>
                 </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+              ) : (
+                paginatedCursos.map((curso, index) => (
+                  <TableRow
+                    key={curso.id}
+                    hover
+                    sx={{
+                      backgroundColor: index % 2 === 0 ? '#D9D9D9' : '#FFFFFF',
+                    }}
+                  >
+                    <TableCell sx={{ fontFamily: 'Poppins', color: '#000000', padding: '8px 16px' }}>
+                      {curso.titulo}
+                    </TableCell>
+                    <TableCell sx={{ fontFamily: 'Poppins', color: '#000000', padding: '8px 16px' }}>
+                      {curso.categoria}
+                    </TableCell>
+                    <TableCell sx={{ padding: '8px 16px' }}>
+                      <Chip
+                        label={getDificuldadeLabel(curso.grau_dificuldade)}
+                        sx={{
+                          backgroundColor: getDificuldadeColor(curso.grau_dificuldade),
+                          color: '#FFFFFF',
+                          fontFamily: 'Poppins',
+                          fontWeight: 500,
+                          fontSize: '12px',
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="center" sx={{ padding: '8px 16px' }}>
+                      <Chip
+                        label={curso.is_active ? 'Ativo' : 'Inativo'}
+                        sx={{
+                          backgroundColor: curso.is_active ? '#2C5F2D' : '#999999',
+                          color: '#FFFFFF',
+                          fontFamily: 'Poppins',
+                          fontWeight: 500,
+                          fontSize: '12px',
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell align="center" sx={{ padding: '8px 16px' }}>
+                      <IconButton
+                        onClick={() => router.push(`/gestao-cursos/editar/${curso.id}`)}
+                        sx={{
+                          padding: '8px',
+                          '&:hover': {
+                            backgroundColor: 'rgba(31, 29, 43, 0.04)',
+                          },
+                        }}
+                      >
+                        <Image src="/edit.svg" alt="Editar" width={24} height={24} />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </TableContainer>
+
+        {/* Paginação */}
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            mt: 2,
+            mb: 2,
+          }}
+        >
+          <Typography
+            sx={{
+              fontFamily: 'Poppins',
+              color: '#000000',
+              fontSize: '14px',
+            }}
+          >
+            Página {page + 1} de {totalPages === 0 ? 1 : totalPages} ({filteredCursos.length} cursos)
+          </Typography>
+
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              onClick={() => handleChangePage(0)}
+              disabled={page === 0}
+              sx={{
+                minWidth: '40px',
+                backgroundColor: '#1F1D2B',
+                color: '#FFFFFF',
+                fontFamily: 'Poppins',
+                '&:hover': {
+                  backgroundColor: '#2a2838',
+                },
+                '&:disabled': {
+                  backgroundColor: '#D9D9D9',
+                  color: '#666666',
+                },
+              }}
+            >
+              {'<<'}
+            </Button>
+            <Button
+              onClick={() => handleChangePage(page - 1)}
+              disabled={page === 0}
+              sx={{
+                minWidth: '40px',
+                backgroundColor: '#1F1D2B',
+                color: '#FFFFFF',
+                fontFamily: 'Poppins',
+                '&:hover': {
+                  backgroundColor: '#2a2838',
+                },
+                '&:disabled': {
+                  backgroundColor: '#D9D9D9',
+                  color: '#666666',
+                },
+              }}
+            >
+              {'<'}
+            </Button>
+            <Button
+              onClick={() => handleChangePage(page + 1)}
+              disabled={page >= totalPages - 1}
+              sx={{
+                minWidth: '40px',
+                backgroundColor: '#1F1D2B',
+                color: '#FFFFFF',
+                fontFamily: 'Poppins',
+                '&:hover': {
+                  backgroundColor: '#2a2838',
+                },
+                '&:disabled': {
+                  backgroundColor: '#D9D9D9',
+                  color: '#666666',
+                },
+              }}
+            >
+              {'>'}
+            </Button>
+            <Button
+              onClick={() => handleChangePage(totalPages - 1)}
+              disabled={page >= totalPages - 1}
+              sx={{
+                minWidth: '40px',
+                backgroundColor: '#1F1D2B',
+                color: '#FFFFFF',
+                fontFamily: 'Poppins',
+                '&:hover': {
+                  backgroundColor: '#2a2838',
+                },
+                '&:disabled': {
+                  backgroundColor: '#D9D9D9',
+                  color: '#666666',
+                },
+              }}
+            >
+              {'>>'}
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+    </Container>
   );
 }
