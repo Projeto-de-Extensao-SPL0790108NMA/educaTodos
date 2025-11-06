@@ -15,7 +15,7 @@ click==8.1.7
 cockpit @ file:///builddir/build/BUILD/cockpit-346-build/cockpit-346/tmp/wheel/cockpit-346-py3-none-any.whl#sha256=2af49639fd2aa79e24420fc5b0a0b73de71dbbb2cc5c2e6eceb2e7abd55a2f8b
 configobj==5.0.9
 crcmod==1.7
-cryptography==44.0.0
+cryptography==44.0.1
 cupshelpers==1.0
 customtkinter==5.2.2
 darkdetect==0.8.0
