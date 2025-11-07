@@ -13,7 +13,7 @@ import {
 import { API_URL } from "@/services/api";
 
 export default function Login() {
-  const [matricula, setMatricula] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
@@ -22,11 +22,11 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      // POST para autenticação com matrícula e senha
+      // POST para autenticação com username e senha
       const response = await fetch(`${API_URL}/api/auth/token/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: matricula, password }),
+        body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
@@ -81,14 +81,16 @@ export default function Login() {
               margin="normal"
               required
               fullWidth
-              id="matricula"
-              label="Matrícula"
-              name="matricula"
+              id="username"
+              label="Usuário"
+              name="username"
+              placeholder="Ex: carlos.silveira"
               autoComplete="username"
               autoFocus
-              value={matricula}
-              onChange={(e) => setMatricula(e.target.value)}
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               sx={{ mb: 2 }}
+              helperText="Digite seu nome de usuário gerado no cadastro"
             />
 
             <TextField
