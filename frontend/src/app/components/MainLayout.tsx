@@ -1,32 +1,28 @@
 "use client";
 
 import { Box, Toolbar } from "@mui/material";
-import Sidebar from "../../../public/Sidebar";
+import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { SidebarProvider } from "./SidebarContext";
 
-export default function MainLayout({ children }: { children: React.ReactNode }){
+interface MainLayoutProps {
+  children: React.ReactNode;
+  isAdmin?: boolean;
+}
+
+export default function MainLayout({ children, isAdmin }: MainLayoutProps) {
   return (
     <SidebarProvider>
-      <Box 
-      sx={{ 
-        display: "flex",
-      }}>
-      <Sidebar />
-      <Box 
-        sx={{ 
-          flexGrow: 1,
-        }}>
-      <Header />
-        <Toolbar /> {/* Espaço para não cobrir o conteúdo pelo AppBar */}
-        <Box component="main" 
-          sx={{ 
-            p: 3,
-          }}>
-          {children}
+      <Box sx={{ display: "flex" }}>
+        <Sidebar />
+        <Box sx={{ flexGrow: 1 }}>
+          <Header isAdmin={isAdmin} />
+          <Toolbar /> {/* Offset for AppBar */}
+          <Box component="main" sx={{ pt: 3, px: 3 }}>
+            {children}
+          </Box>
         </Box>
       </Box>
-    </Box>
     </SidebarProvider>
   );
 }

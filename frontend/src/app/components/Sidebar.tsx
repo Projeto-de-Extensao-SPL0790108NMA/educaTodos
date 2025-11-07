@@ -18,10 +18,10 @@ import {
   BookIcon, 
   ChevronLeftIcon,
   UserAddIcon
-} from '../public/icons/IconSB';
+} from '../../../public/icons/IconSB';
 
-import { useSidebar } from '../src/app/components/SidebarContext';
-import { useAuth } from '../src/providers/AuthProvider';
+import { useSidebar } from './SidebarContext';
+import { useAuth } from '../../providers/AuthProvider';
 import { useRouter } from 'next/navigation';
 
 
@@ -61,27 +61,25 @@ export default function Sidebar() {
   // Verifica se o usuário é staff (admin)
   const isAdmin = user && user.is_staff;
 
-  const menuItems = [
-    { text: "Início", icon: Icons.HouseIcon() },
-    { text: "Meus Certificados", icon: Icons.HatIcon() },
-    { text: "Meu Desempenho", icon: Icons.GraphIcon() },
-    { text: "Cursando", icon: Icons.BookIcon() },
+  // Define menu items with paths for better routing
+  const studentMenuItems = [
+    { text: "Início", icon: Icons.HouseIcon(), path: "/" },
+    { text: "Meus Certificados", icon: Icons.HatIcon(), path: "/certificados" },
+    { text: "Meu Desempenho", icon: Icons.GraphIcon(), path: "/desempenho" },
+    { text: "Cursando", icon: Icons.BookIcon(), path: "/cursando" },
   ];
 
-  // Adiciona item de admin apenas se for staff
-  if (isAdmin) {
-    menuItems.push({ 
-      text: "Cadastro de Detentos", 
-      icon: Icons.UserAddIcon()
-    });
-  }
+  const adminMenuItems = [
+    { text: "Visão Geral", icon: Icons.GraphIcon(), path: "/visao-geral" },
+    { text: "Gestão de Alunos", icon: Icons.HatIcon(), path: "/gestao-alunos" },
+    { text: "Gestão de Cursos", icon: Icons.BookIcon(), path: "/gestao-cursos" }
+  ];
 
-  const handleItemClick = (text: string) => {
-    if (text === "Cadastro de Detentos") {
-      router.push('/adicionar');
-      toggleSidebar();
-    }
-    // Adicione navegação para outros itens aqui conforme necessário
+  const menuItems = isAdmin ? adminMenuItems : studentMenuItems;
+
+  const handleItemClick = (path: string) => {
+    router.push(path);
+    toggleSidebar();
   };
 
   return (
@@ -98,6 +96,8 @@ export default function Sidebar() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
+          backgroundColor: isAdmin ? '#1F1D2B' : undefined,
+          color: isAdmin ? '#FFFFFF' : undefined,
           //p: 2,
         },
       }}
@@ -114,10 +114,10 @@ export default function Sidebar() {
         >
             <Box
               component='img'
-              src='/logo.svg'
+              src='/Logo.png'
               alt='Logo'
               sx={{
-                width: open ? 40:40,
+                width: 50,
                 height: 'auto',
                 transition: 'width 0.3s ease',
                 cursor: 'pointer',
@@ -125,11 +125,12 @@ export default function Sidebar() {
               onClick={toggleSidebar}
             />   
           {open && (
-            <Typography variant="h5" 
+            <Typography variant="h5"
               sx={{ 
                 ml: 2,
+                color: isAdmin ? '#FFFFFF' : undefined 
               }}>
-              Painel do Aluno
+              {isAdmin ? 'Painel de Controle' : 'Painel do Aluno'}
             </Typography>
           )}
         </Box>
@@ -138,18 +139,21 @@ export default function Sidebar() {
           {menuItems.map((item, index) => (
             <ListItem 
               key={index}
-              onClick={() => handleItemClick(item.text)}
+              onClick={() => handleItemClick(item.path)}
               sx={{
                 justifyContent: open ? 'initial' : 'center',
                 cursor: 'pointer',
+                color: isAdmin ? '#FFFFFF' : undefined,
                 '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                  backgroundColor: isAdmin ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.08)',
                 },
               }}
             >
               <ListItemIcon 
                 sx={{
-                  justifyContent: 'center', minWidth: open ? 40 : 'auto',
+                  justifyContent: 'center', 
+                  minWidth: open ? 40 : 'auto',
+                  color: isAdmin ? '#FFFFFF' : undefined,
                 }}
               >
                 {item.icon}
@@ -166,7 +170,12 @@ export default function Sidebar() {
               textAlign: 'right',
             }}
           >
-            <IconButton onClick={toggleSidebar}>
+            <IconButton 
+              onClick={toggleSidebar}
+              sx={{
+                color: isAdmin ? '#FFFFFF' : undefined
+              }}
+            >
               {Icons.ChevronLeftIcon()}
             </IconButton>
           </Box> 

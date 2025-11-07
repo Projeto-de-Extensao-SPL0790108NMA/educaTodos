@@ -33,6 +33,7 @@ INSTALLED_APPS = [
 
     # Projeto
     "apps.accounts",
+    "apps.courses",
 
     #CORS
     'corsheaders'
@@ -125,3 +126,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "SIGNING_KEY": SECRET_KEY,
 }
+
+# --- Media Files ---
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

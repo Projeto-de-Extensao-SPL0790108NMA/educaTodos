@@ -7,6 +7,21 @@ from .models import Inmate
 from .utils import gerar_matricula
 
 
+class InmateListSerializer(serializers.ModelSerializer):
+    """Serializer para listar inmates com informações básicas."""
+    status = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = Inmate
+        fields = ['id', 'full_name', 'matricula', 'status', 'must_change_password', 'created_at']
+    
+    def get_status(self, obj):
+        """Retorna o status do aluno (ativo ou senha provisória)."""
+        if obj.must_change_password:
+            return 'Senha Provisória'
+        return 'Ativo'
+
+
 class AdminCreateInmateSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=150)
     matricula = serializers.CharField(max_length=20, required=False)  # opcional (gera se não vier)
