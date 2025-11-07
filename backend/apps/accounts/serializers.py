@@ -4,7 +4,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from .models import Inmate
-from .utils import gerar_matricula
+from .utils import gerar_matricula, generate_unique_username
 
 
 class InmateListSerializer(serializers.ModelSerializer):
@@ -35,13 +35,17 @@ class AdminCreateInmateSerializer(serializers.Serializer):
 
         validate_password(password)  # aplica validadores do Django
 
-        # Credencial (login = matrícula)
-        user = User.objects.create_user(username=matricula)
+        # Gera username único baseado no nome completo
+        username = generate_unique_username(full_name)
+
+        # Credencial (login = username gerado, não mais a matrícula)
+        user = User.objects.create_user(username=username)
         user.set_password(password)
         user.is_active = True
         user.save()
 
         # Perfil (dados do detento + flag para troca obrigatória)
+        # Mantém matrícula como identificador administrativo separado
         inmate = Inmate.objects.create(
             user=user,
             full_name=full_name,
@@ -51,11 +55,12 @@ class AdminCreateInmateSerializer(serializers.Serializer):
         return inmate
 
     def to_representation(self, inmate: Inmate):
-        # Nunca retorna senha; apenas dados seguros para o cliente
+        # Retorna dados seguros para o cliente, incluindo o username gerado
         return {
             "id": str(inmate.id),
             "nome_completo": inmate.full_name,
             "matricula": inmate.matricula,
+            "username": inmate.user.username,  # Novo: username para login
             "must_change_password": inmate.must_change_password,
         }
 

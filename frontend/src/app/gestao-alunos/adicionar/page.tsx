@@ -33,7 +33,12 @@ export default function AdicionarAlunoPage() {
   const [errors, setErrors] = useState<{[key: string]: string}>({})
   const [success, setSuccess] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [createdInmate, setCreatedInmate] = useState<{ name: string; registration_number: string; password: string } | null>(null)
+  const [createdInmate, setCreatedInmate] = useState<{ 
+    name: string; 
+    registration_number: string; 
+    username: string;  // Novo: username gerado
+    password: string;
+  } | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +109,7 @@ export default function AdicionarAlunoPage() {
         setCreatedInmate({
           name: response.nome_completo || response.full_name || formData.nome,
           registration_number: response.matricula || 'N/A',
+          username: response.username || 'N/A',  // Username gerado automaticamente
           password: formData.senha // Salva a senha para exibir
         })
         setShowSuccessModal(true)
@@ -191,13 +197,16 @@ export default function AdicionarAlunoPage() {
                   <strong>Nome:</strong> {createdInmate.name}
                 </Typography>
                 <Typography sx={{ mb: 1, color: '#000000', fontFamily: 'Poppins', fontWeight: 400 }}>
-                  <strong>Matrícula gerada:</strong> {createdInmate.registration_number}
+                  <strong>Matrícula:</strong> {createdInmate.registration_number}
+                </Typography>
+                <Typography sx={{ mb: 1, color: '#2C5F2D', fontFamily: 'Poppins', fontWeight: 600, fontSize: '16px' }}>
+                  <strong>Usuário para login:</strong> {createdInmate.username}
                 </Typography>
                 <Typography sx={{ mb: 2, color: '#000000', fontFamily: 'Poppins', fontWeight: 400 }}>
                   <strong>Senha criada:</strong> {createdInmate.password}
                 </Typography>
                 <Typography variant="caption" sx={{ display: 'block', color: '#6B1515', fontFamily: 'Poppins', fontWeight: 500, fontStyle: 'italic' }}>
-                  ⚠️ Guarde essa senha! Ela não será exibida novamente.
+                  ⚠️ Guarde essas credenciais! O usuário e a senha não serão exibidos novamente.
                 </Typography>
               </Box>
             )}
