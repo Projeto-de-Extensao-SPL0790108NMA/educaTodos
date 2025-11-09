@@ -1,10 +1,9 @@
 <p align="center">
-  <img width="300" height="300" alt="Logo do Conhecimento Livre" 
+  <img width="300" height="300" alt="Logo do Conhecimento Livre"
        src="https://github.com/user-attachments/assets/7dbe14d6-ac35-4027-ab2f-b267b9d18758" />
 </p>
 
 <h1 align="center">📚 Conhecimento Livre</h1>
-
 <p align="center">
   <strong>Sistema de Ensino para Ressocialização de Detentos</strong><br>
   <strong>Universidade UNINORTE – Curso de Ciência da Computação – 8º Período</strong>
@@ -14,228 +13,324 @@
 
 ## 📑 Índice
 
-- [📘 Descrição do Projeto](#-descrição-do-projeto)
-- [🎯 Problema e Oportunidade](#-problema-e-oportunidade)
-- [💡 Solução Proposta](#-solução-proposta)
-- [⚙ Tecnologias-Chave](#-tecnologias-chave)
-- [📂 Estrutura do Projeto](#-estrutura-do-projeto)
-- [📦 Instalação e Execução](#-instalação-e-execução)
-- [🔐 Requisitos Não Funcionais](#-requisitos-não-funcionais)
-- [🧭 Roadmap](#-roadmap)
-- [👥 Equipe](#-equipe)
-- [📚 Referências](#-referências)
+* [📘 Descrição do Projeto](#-descrição-do-projeto)
+* [🎯 Problema e Oportunidade](#-problema-e-oportunidade)
+* [💡 Solução Proposta](#-solução-proposta)
+* [⚙ Tecnologias-Chave](#-tecnologias-chave)
+* [📂 Estrutura do Projeto](#-estrutura-do-projeto)
+* [📦 Instalação e Execução](#-instalação-e-execução)
+* [▶️ Uso Rápido](#uso-rapido)
+* [👨‍🎓 Adicionar Usuário Aluno](#adicionar-usuario-aluno)
+* [🔐 Requisitos Não Funcionais](#-requisitos-não-funcionais)
+* [🧭 Roteiro](#-roteiro)
+* [👥 Equipe](#-equipe)
+* [📚 Referências](#-referências)
 
 ---
 
-## 🧭 Descrição do Projeto
+## 📘 Descrição do Projeto
 
-O *Conhecimento Livre* é um sistema de ensino digital voltado para o *ambiente prisional brasileiro, com o objetivo de* *reduzir as taxas de reincidência criminal* através da *educação e qualificação profissional*.  
+O **Conhecimento Livre** é um sistema de ensino digital voltado para o ambiente prisional brasileiro, com o objetivo de **reduzir a reincidência criminal** através de educação e qualificação profissional.
 
 A plataforma é composta por dois módulos principais:
-- *Aplicação Mestre (Administrativa):* utilizada por administradores e instrutores.
-- *Aplicação Cliente (Aluno):* executada nos computadores dos detentos, em modo *100% offline*.
 
-A solução é inovadora por combinar *tecnologia educacional (EdTech) e* *segurança reforçada.*
+* **Aplicação Mestre (Administrativa)**: utilizada por administradores e instrutores.
+* **Aplicação Cliente (Aluno)**: executada nos computadores dos detentos, em modo **100% offline**.
+
+A solução combina **EdTech** e **segurança**, mantendo operação offline com sincronização controlada.
 
 ---
 
 ## 🎯 Problema e Oportunidade
 
-A reincidência criminal no Brasil pode chegar a *70%* em alguns estados.  
-A falta de acesso à educação e qualificação profissional dentro das prisões *contribui diretamente para esse cenário*.  
-O *Conhecimento Livre* nasce como resposta a essa lacuna — uma plataforma de ensino *segura, acessível e offline, adaptada ao ambiente prisional e capaz de* *transformar o tempo de reclusão em oportunidade de aprendizado.*
+* A reincidência criminal no Brasil pode chegar a **70%** em alguns estados.
+* A carência de acesso à educação e capacitação dentro do sistema prisional **agrava** o cenário.
+
+**Oportunidade:** entregar uma plataforma **segura, acessível e offline**, capaz de transformar o tempo de reclusão em oportunidade de aprendizado.
 
 ---
 
 ## 💡 Solução Proposta
 
-A plataforma *Conhecimento Livre* oferece:
-- Cursos modulares (alfabetização, ensino fundamental, técnico-profissionalizante);
-- Conteúdo *gamificado e adaptativo*;
-- Operação *offline*, com sincronização local controlada;
-- *Interface acessível* para públicos com baixa literacia digital;
-- *Dashboard administrativo* com métricas de desempenho e relatórios de progresso.
+A plataforma oferece:
+
+* 📚 **Cursos modulares** (alfabetização, ensino fundamental, técnico-profissionalizante).
+* 🕹️ **Conteúdo gamificado** e **adaptativo**.
+* 📴 **Operação offline** com sincronização posterior controlada.
+* ♿ **Interface acessível** para baixa literacia digital.
+* 📊 **Dashboard administrativo** com métricas e relatórios de progresso.
 
 ---
 
 ## ⚙ Tecnologias-Chave
 
-| Camada            | Tecnologia                      | Descrição                                     |
-|-------------------|----------------------------------|-----------------------------------------------|
-| Frontend          | React + Next.js + MUI           | UI moderna, responsiva e acessível            |
-| Backend           | Django (Python)                 | API segura e escalável                        |
-| Banco de Dados    | PostgreSQL (prod) / SQLite (dev)| Armazenamento confiável                       |
-| DevOps            | GitHub Actions + Docker         | CI/CD e containerização                       |
-| Segurança         | Criptografia + RBAC + Logs      | Proteção de dados e auditoria
+| Camada / Categoria                | Tecnologia                                   | Descrição                                               |
+|----------------------------------|----------------------------------------------|---------------------------------------------------------|
+| Front-end                        | **Next.js (React) + TypeScript + MUI**       | UI moderna, responsiva e acessível                      |
+| Backend (API principal)          | **Django (Python) + DRF + SimpleJWT**        | API REST segura com autenticação JWT                    |
+| Serviços/Microserviços | **Node.js + Express**                         | Endpoints auxiliares/integrações quando necessário      |
+| Testes de API                    | **Postman**                                   | Validação de requisições e respostas do backend         |
+| Banco de Dados                   | **PostgreSQL (prod) / SQLite (dev)**         | Armazenamento relacional confiável                      |
+| DevOps                           | **GitHub Actions + Docker**                   | CI/CD e padronização/empacotamento de ambiente          |
+| Segurança                        | **Criptografia + RBAC + Logs**                | Proteção de dados, controle de acesso e auditoria       |
+
 ---
 
 ## 📂 Estrutura do Projeto
-
-```bash
-/
-├── backend/                         # Aplicação principal em Django (Python)
-│   ├── conhecimento_livre/          # Diretório da aplicação Django
-│   ├── db.sqlite3                   # Banco de dados local (SQLite)
-│   ├── manage.py                    # Script de gerenciamento do Django
-│   └── requirements.txt             # Dependências do backend
-│
-├── frontend/                        # Aplicação web (Next.js + React)
-│   ├── public/                      # Arquivos estáticos (imagens, ícones, etc.)
-│   ├── src/
-│   │   └── app/                     # Código-fonte principal (páginas e componentes)
-│   ├── .gitignore                   # Arquivos ignorados pelo Git
-│   ├── jsconfig.json                # Configurações do ambiente JS
-│   ├── next.config.mjs              # Configurações do Next.js
-│   ├── package.json                 # Dependências e scripts npm
-│   ├── package-lock.json            # Versões travadas das dependências
-│   ├── postcss.config.mjs           # Configuração do PostCSS
-│   └── README.md                    # Documentação específica do frontend
-│
-└── README.md                        # Documentação geral do projeto
-
 ```
+bash
+/
+├── .github/
+│   └── workflows/
+│       └── docker-ci.yml            # Pipeline CI (build/test)
+│
+├── backend/                         # Django (API)
+│   ├── .env                         # Variáveis locais do backend
+│   ├── apps/
+│   ├── conhecimento_livre/
+│   ├── .gitattributes
+│   ├── .gitignore
+│   ├── COURSES_API_DOCUMENTATION.md
+│   ├── db.sqlite3
+│   ├── Dockerfile
+│   ├── manage.py
+│   └── requirements.txt
+│
+├── frontend/                        # Next.js (Web)
+│   ├── .next/
+│   ├── node_modules/
+│   ├── public/
+│   ├── src/
+│   ├── .gitignore
+│   ├── Dockerfile
+│   ├── jsconfig.json
+│   ├── next-env.d.ts
+│   ├── next.config.mjs
+│   ├── next.config.ts
+│   ├── package-lock.json
+│   ├── package.json
+│   └── tsconfig.json
+│
+└── README.md
+```
+> **Rotas de API (principais)**
+>
+> * `POST /api/auth/token/` · `POST /api/auth/token/refresh/` (JWT)
+> * `GET /api/accounts/me/` · `POST /api/accounts/auth/change-password/`
+> * `GET /api/courses/courses/` · `GET /api/courses/sections/` · `GET /api/courses/lessons/` · `GET /api/courses/attachments/`
 
 ---
 
-## 📦 Instalação e Execução (Em andamento)
+## 📦 Instalação e Execução
+
+### ✅ Pré-requisitos
+
+* Git
+* Python **3.11+**
+* Node.js **18+** (recomendado **20 LTS**)
+
+### ⚙️ Instalação
+
+**Backend**
+
+```bash
+cd backend
+python -m venv .venv
+python -m pip install -U pip
+python -m pip install -r requirements.txt
+python manage.py migrate
+```
+
+**Frontend**
+
+```bash
+cd ../frontend
+npm install
+```
+
+> **Nota:** Em DEV o front funciona **sem `.env`** (proxy/fallback configurado). Só crie `frontend/.env` se precisar apontar manualmente a API:
+> `VITE_API_URL=http://127.0.0.1:8000`
+
+### ▶️ Execução
+
+**Backend**
+
+```bash
+python manage.py runserver   # http://127.0.0.1:8000
+```
+
+**Frontend**
+
+```bash
+npm run dev                  # ex.: http://localhost:3000 ou 5173
+```
+
+**Acesso:**
+
+* Criar admin: `python manage.py createsuperuser` → `/admin`.
+* Perfis: o login é **único**; o perfil (aluno/professor) é decidido após autenticação.
+
+---
+
+<a id="uso-rapido"></a>
+## ▶️ Uso Rápido
+
+1. Entre em **/admin** (Django) com o usuário **ADMIN** criado.
+2. **Crie um usuário com perfil ALUNO** (veja a seção abaixo) para navegar no front.
+3. No frontend, autentique na **tela única de login**; o backend decide o perfil (aluno/professor) após o JWT.
+
+---
+
+<a id="adicionar-usuario-aluno"></a>
+## 👨‍🎓 Adicionar Usuário Aluno
+
+A autenticação é **única**; o backend decide o perfil. Para aluno, use a **matrícula como `username`** e **não** marque permissões administrativas.
+
+### Via Shell do Django
+
+**Shell do Django:**  
+
+**Entrar**
+```python
+Python manage.py shell
+```  
+```python
+from django.contrib.auth import get_user_model
+U = get_user_model()
+matricula = "20250001"
+senha = "SenhaAluno123!"
+u, _ = U.objects.get_or_create(username=matricula, defaults={"email": "aluno01@local"})
+u.set_password(senha)
+u.is_staff = False
+u.is_superuser = False
+u.save()
+print("Aluno pronto:", u.username)
+# (Opcional) criar perfil Inmate se existir
+try:
+    from accounts.models import Inmate
+    Inmate.objects.get_or_create(user=u)
+except Exception:
+    pass
+```
+**Sair**
+```python 
+exit ()
+```
+### Teste rápido do login do aluno
+
+```bash
+curl -s http://127.0.0.1:8000/api/auth/token/ -H 'Content-Type: application/json' \
+  -d '{"username":"20250001","password":"SenhaAluno123!"}'
+```
+
+Se retornar `{ access, refresh }`, o aluno está pronto para usar o front.
 
 ---
 
 ## 🔐 Requisitos Não Funcionais
 
-Os requisitos não funcionais do projeto *Conhecimento Livre* definem os padrões de qualidade e as restrições operacionais necessárias para garantir a *segurança,* *usabilidade,* *desempenho* e *manutenibilidade* da plataforma.
+**1) Segurança e Auditoria**
 
+* **Criptografia**: dados protegidos em repouso e em trânsito.
+* **RBAC**: permissões distintas para administradores, instrutores e alunos.
+* **Logs**: registro de ações críticas (login, criação/edição/remoção) com trilha de auditoria.
 
-### <strong>1. Segurança e Auditoria</strong>
+**2) Usabilidade e Acessibilidade**
 
-- *Encriptação de Dados:*  
-  Todos os dados devem ser protegidos com algoritmos de encriptação robustos, tanto *em repouso* (armazenamento local) quanto *em trânsito* (transferência em rede).  
+* **Interface intuitiva** com ícones e elementos claros.
+* **Baixa curva de aprendizado** (tarefas essenciais em até 3 cliques).
+* **Compatibilidade** com hardware modesto.
 
-- *Controle de Acesso (RBAC):*  
-  A aplicação deve implementar *níveis de permissão* distintos para administradores, instrutores e alunos.  
+**3) Desempenho e Escalabilidade**
 
-- *Logs e Auditoria:*  
-  Toda ação crítica do sistema (login, criação, edição e exclusão) deve ser registrada em logs imutáveis.  
+* **Tempo de resposta** ≤ 2s em condições normais.
+* **Operação offline** com sincronização posterior.
+* **Escala** para múltiplas unidades prisionais sem degradação perceptível.
 
+**4) Confiabilidade e Manutenibilidade**
 
-### <strong>2. Usabilidade e Acessibilidade</strong>
+* **Integridade de dados**: 0% de perda em sincronizações, mesmo com falhas de rede/energia.
+* **Boas práticas** (SOLID, Clean Code) e convenções.
+* **Testes automatizados**: cobertura **≥ 80%** (unitários e integrados).
 
-- *Interface Intuitiva:*  
-  O sistema deve priorizar uma interface visual, com *ícones e elementos claros*, reduzindo a necessidade de leitura extensa.  
+**5) Matriz de Validação**
 
-- *Baixa Curva de Aprendizado:*  
-  O usuário deve conseguir executar tarefas essenciais em até *três cliques*.  
-
-- *Compatibilidade com Hardware Modesto:*  
-  A aplicação deve funcionar corretamente em computadores de *baixo custo e especificações limitadas*.  
-
-
-### <strong>3. Desempenho e Escalabilidade</strong>
-
-- *Tempo de Resposta:*  
-  A aplicação deve responder às interações do usuário em até *2 segundos* em condições normais de uso.  
-
-- *Processamento Offline:*  
-  As operações críticas devem funcionar *sem conexão com a internet*, utilizando sincronização posterior.  
-
-- *Escalabilidade:*  
-  A arquitetura do sistema deve suportar aumento no número de usuários, cursos e unidades prisionais *sem degradação significativa* de desempenho.  
-
-
-### <strong>4. Confiabilidade e Manutenibilidade</strong>
-
-- *Integridade dos Dados:*  
-  A transferência e sincronização devem garantir *0% de perda de dados*, mesmo em caso de falhas de rede ou energia.  
-
-- *Código Limpo e Padrões de Projeto:*  
-  O sistema deve seguir boas práticas de desenvolvimento (*SOLID, **Clean Code*) e convenções de nomenclatura.  
-
-- *Testes Automatizados:*  
-  O sistema deve possuir *cobertura mínima de 80%* com testes unitários e integrados.  
-
-
-### <strong>5. Matriz de Validação dos Requisitos Não Funcionais</strong>
-
-| Categoria        | Requisito                                                  | Prioridade |
-|------------------|-------------------------------------------------------------|-------------|
-| *Segurança*    | Encriptação de dados em repouso e em trânsito.              | Alta        |
-| *Usabilidade*  | Interface acessível e simples para baixa literacia digital. | Alta        |
-| *Compatibilidade* | Funcionamento em desktops de baixo custo.                | Alta        |
-| *Desempenho*   | Tempo de resposta ≤ 2s nas ações principais.                | Alta        |
-| *Confiabilidade* | Nenhuma perda de dados em sincronizações.                 | Alta        |
-| *Manutenibilidade* | Cobertura de testes superior a 80%.                     | Média       | 
-
+| Categoria        | Requisito                                        | Prioridade |
+| ---------------- | ------------------------------------------------ | ---------- |
+| Segurança        | Criptografia em repouso e em trânsito            | Alto       |
+| Usabilidade      | Interface acessível para baixa literacia digital | Alto       |
+| Compatibilidade  | Funcionamento em desktops de baixo custo         | Alto       |
+| Desempenho       | Tempo de resposta ≤ 2s nas ações principais      | Alto       |
+| Confiabilidade   | Nenhuma perda de dados em sincronizações         | Alto       |
+| Manutenibilidade | Cobertura de testes ≥ 80%                        | Média      |
 
 ---
 
+## 🧭 Roteiro
 
-## 🧭 Roadmap
+**Fase 1 – MVP (0–6 meses)**
 
-O desenvolvimento do *Conhecimento Livre* será conduzido em três fases principais, priorizando a entrega progressiva de valor e estabilidade do sistema.
+* Módulo administrativo (cadastro de usuários, cursos e conteúdos)
+* Cliente offline (acesso ao conteúdo e registro de progresso)
+* Dashboard com estatísticas básicas (alunos ativos, cursos e progresso)
+* Base infra (Docker + Django + Next.js)
+* Testes de usabilidade/desempenho em ambiente prisional
 
+**Fase 2 – Expansão e Otimização (6–12 meses)**
 
-### <strong>Fase 1 – MVP (0–6 meses)</strong>
-*Objetivo:* disponibilizar uma versão mínima funcional da plataforma para uso piloto em ambiente controlado.
+* Cursos técnico-profissionalizantes
+* Relatórios avançados e exportação
+* Gamificação (pontuação, conquistas, ranking)
+* Sincronização otimizada entre estações
+* Monitoramento e segurança aprimorados
 
-*Entregas principais:*
-- Módulo administrativo (cadastro de usuários, cursos e conteúdos);
-- Cliente offline (acesso ao conteúdo e registro de progresso);
-- Dashboard com estatísticas básicas (alunos ativos, cursos e progresso);
-- Banco de dados inicial e infraestrutura mínima (Docker + Django + Next.js);
-- Testes de usabilidade e desempenho em ambiente prisional controlado.
+**Fase 3 – Evolução e IA (12–24 meses)**
 
+* IA educacional para trilhas personalizadas
+* Análises preditivas e relatórios
+* Integração com redes externas/APIs governamentais
+* Backups automatizados e ambiente redundante
+* Versão web ampliada e multiunidade
 
-### <strong>Fase 2 – Expansão e Otimização (6–12 meses)</strong>
-*Objetivo:* ampliar o escopo do sistema, introduzindo novas funcionalidades e melhorias com base no feedback inicial.
+**📅 Marcos**
 
-*Entregas principais:*
-- Implementação de cursos técnico-profissionalizantes;
-- Relatórios avançados e exportação de dados administrativos;
-- Mecanismo de gamificação (pontuação, conquistas e ranking);
-- Sincronização otimizada entre estações cliente e servidor;
-- Integração com módulos de segurança e monitoramento de uso.
-
-
-### <strong>Fase 3 – Evolução e Inteligência (12–24 meses)</strong>
-*Objetivo:* consolidar o sistema como uma solução completa de educação prisional e integrar tecnologias de personalização.
-
-*Entregas principais:*
-- Implementação de *IA Educacional* para trilhas personalizadas;
-- Análise de dados para geração de relatórios preditivos;
-- Integração com redes de ensino externas e APIs governamentais;
-- Automação de backups e implantação de ambiente redundante;
-- Versão Web ampliada e suporte multiunidade.
-
-
-### <strong>📅 Marcos Principais</strong>
-
-| Período             | Entregas-Chave                                  | Status Esperado |
-|---------------------|--------------------------------------------------|-----------------|
-| 0–6 meses (MVP)     | Versão inicial com login, cursos e dashboard     | ✅ Em desenvolvimento |
-| 6–12 meses (Expansão) | Relatórios, gamificação e otimizações            | 🕒 Futuro |
-| 12–24 meses (Evolução) | IA, automação e integração com parceiros externos | 🕒 Futuro |
+| Período         | Entregas-Chave                        | Status    |
+| --------------- | ------------------------------------- | --------- |
+| 0–6 meses (MVP) | Login, cursos e dashboard             | ✅ Em dev  |
+| 6–12 meses      | Relatórios, gamificação e otimizações | 🕒 Futuro |
+| 12–24 meses     | IA, automação e integrações externas  | 🕒 Futuro |
 
 ---
 
 ## 👥 Equipe
 
-| Nome                          | Função               |
-|-------------------------------|----------------------|
-| Alice Regina de Souza         | UI/UX                |
-| Axl John Lima da Costa        | Dev Front-End            |
-| Daniel Alves Silva Filho      | QA                   |
-| Daniel Mendonça da Silva      | PO                   |
-| Isaque Perez Maia             | CEO                  |
-| Julia da Silva Oliveira       | DevOps               |
-| João Vinícius B. Macedo       | Dev Back-End             |
-| Lucas Araújo Amorim           | Dev Front-End             |
-| Nicolas Dias Xavier           | Dev Back-End              |
-| Renan Quintelo Nascimento | DevOps           |
-| Rosiely Libertino de Menezes  | QA                   |
-| Thiago Pena Araújo            | Analista de Negócios (AN) |
+| Nome                         | Função                    |
+| ---------------------------- | ------------------------- |
+| Alice Regina de Souza        | UI/UX                     |
+| Axl John Lima da Costa       | Desenvolvedor Front-End   |
+| Daniel Alves Silva Filho     | QA                        |
+| Daniel Mendonça da Silva     | DEPOIS                    |
+| Isaque Perez Maia            | CEO                       |
+| Julia da Silva Oliveira      | DevOps                    |
+| João Vinícius B. Macedo      | Desenvolvedor Back-End    |
+| Lucas Araújo Amorim          | Desenvolvedor Front-End   |
+| Nicolas Dias Xavier          | Desenvolvedor Back-End    |
+| Renan Quintelo Nascimento    | DevOps                    |
+| Rosiely Libertino de Menezes | QA                        |
+| Thiago Pena Araújo           | Analista de Negócios (AN) |
 
 ---
 
-## 📚 Referências (Em andamento)
+## 📚 Referências
 
-
+* **Next.js + TypeScript** — [https://nextjs.org/docs](https://nextjs.org/docs) / [https://www.typescriptlang.org/docs/](https://www.typescriptlang.org/docs/)
+* **React** — [https://react.dev/learn](https://react.dev/learn)
+* **Django** — [https://docs.djangoproject.com/](https://docs.djangoproject.com/)
+* **Django REST Framework** — [https://www.django-rest-framework.org/](https://www.django-rest-framework.org/)
+* **SimpleJWT** — [https://django-rest-framework-simplejwt.readthedocs.io/](https://django-rest-framework-simplejwt.readthedocs.io/)
+* **Material UI (MUI)** — [https://mui.com/](https://mui.com/)
+* **PostgreSQL** — [https://www.postgresql.org/docs/](https://www.postgresql.org/docs/)
+* **SQLite** — [https://sqlite.org/docs.html](https://sqlite.org/docs.html)
+* **Docker** — [https://docs.docker.com/](https://docs.docker.com/)
+* **GitHub Actions** — [https://docs.github.com/actions](https://docs.github.com/actions)
+* **OWASP DevSecOps Guideline** — [https://owasp.org/www-project-devsecops-guideline/latest/index.html](https://owasp.org/www-project-devsecops-guideline/latest/index.html)
