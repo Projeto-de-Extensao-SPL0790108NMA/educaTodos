@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -12,9 +12,9 @@ import { ModalSecao, ModalAula } from './components/index';
 import {
   FormularioCurso,
   SecaoAulas,
-  LayoutCursoDuasColunas,
   BotoesAcaoCurso,
 } from '../components';
+import LayoutCursoDuasColunas from '../components/LayoutCursoDuasColunas';
 
 interface Anexo {
   id: string;
@@ -51,7 +51,7 @@ export default function CriarCursoPage() {
   const [titulo, setTitulo] = useState('');
   const [subtitulo, setSubtitulo] = useState('');
   const [categoria, setCategoria] = useState('');
-  const [grauDificuldade, setGrauDificuldade] = useState('iniciante');
+  const [grauDificuldade, setGrauDificuldade] = useState('');
   const [resumo, setResumo] = useState('');
   const [imagem, setImagem] = useState<File | null>(null);
   const [imagemPreview, setImagemPreview] = useState<string>('');
@@ -85,17 +85,29 @@ export default function CriarCursoPage() {
   });
 
   // Handler para imagem
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImagem(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagemPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+  const handleImageChange = (file: File | null) => {
+  if (!file) {
+    setImagem(null);
+    setImagemPreview('');
+    return;
+  }
+  setImagem(file);
+  const url = URL.createObjectURL(file);
+  setImagemPreview(url);
+};
+
+useEffect(() => {
+  return () => {
+    if (imagemPreview) {
+      try {
+        URL.revokeObjectURL(imagemPreview);
+      } catch {
+        // ignore
+      }
     }
   };
+}, [imagemPreview]);
+
 
   // ===== FUNÇÕES DO MODAL DE SEÇÃO =====
   const abrirModalNovaSecao = () => {
@@ -417,7 +429,7 @@ export default function CriarCursoPage() {
   };
 
   return (
-    <Box sx={{ padding: 4, backgroundColor: '#EDEDED', minHeight: '100vh' }}>
+    <Box sx={{ padding: 4, minHeight: '100vh' }}>
       <Typography
         variant="h4"
         sx={{
@@ -426,9 +438,7 @@ export default function CriarCursoPage() {
           color: '#000000',
           fontFamily: 'Poppins, sans-serif',
         }}
-      >
-        Criar Novo Curso
-      </Typography>
+      >Criar Novo Curso</Typography>
 
       {error && (
         <Alert severity="error" sx={{ marginBottom: 2 }}>
@@ -441,7 +451,19 @@ export default function CriarCursoPage() {
           {success}
         </Alert>
       )}
-
+      <Box
+        sx={{
+            justifyContent: 'space-between',
+            alignItems: 'flex-start',
+            gap: 4,
+            mb: 4,
+            p: 2,
+           backgroundColor: '#f2f2f2',
+            borderRadius: '8px',
+            border: '1px solid #ccc',
+            flexWrap: 'wrap',
+        }}
+      >
       <form onSubmit={handleSubmit}>
         <LayoutCursoDuasColunas
           colunaEsquerda={
@@ -474,9 +496,9 @@ export default function CriarCursoPage() {
             />
           }
         />
-
-        <BotoesAcaoCurso loading={loading} labelBotaoPrincipal="Criar Curso" />
+        <BotoesAcaoCurso loading={loading} labelBotaoPrincipal="Enviar" />
       </form>
+      </Box>
 
       {/* MODAIS */}
       <ModalSecao

@@ -1,17 +1,15 @@
 import React from 'react';
 import {
   Box,
-  Button,
   TextField,
   Typography,
   Select,
   MenuItem,
   FormControl,
   InputLabel,
-  Paper,
-  FormControlLabel,
-  Switch,
+  Menu,
 } from '@mui/material';
+import UploadImageField from './UploadImageField';
 
 interface FormularioCursoProps {
   titulo: string;
@@ -27,8 +25,12 @@ interface FormularioCursoProps {
   isActive: boolean;
   setIsActive: (value: boolean) => void;
   imagemPreview: string;
-  onImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onImageChange: (file: File | null) => void;
   labelBotaoImagem?: string;
+  embedded?: boolean;
+  fieldSize?: 'small' | 'medium';
+  fieldSx?: any;
+  compact?: boolean;
 }
 
 export default function FormularioCurso({
@@ -42,27 +44,32 @@ export default function FormularioCurso({
   setGrauDificuldade,
   resumo,
   setResumo,
-  isActive,
-  setIsActive,
   imagemPreview,
   onImageChange,
-  labelBotaoImagem = 'Upload Imagem do Curso',
+  fieldSize = 'small',
+  fieldSx = {},
+  compact = true,
 }: FormularioCursoProps) {
+  const defaultFieldSx = {
+    backgroundColor: 'transparent',
+    maxWidth: 720,
+    '& .MuiInputBase-input': { color: '#000000', py: fieldSize === 'small' ? '6px' : undefined },
+    '& .MuiInputLabel-root': { color: '#000000' },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+      backgroundColor: '#FFFFFF',
+      '& fieldset': { borderColor: '#000000' },
+      '&:hover fieldset': { borderColor: '#000000' },
+      '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
+    },
+    ...fieldSx,
+  };
+
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        padding: 3,
-        backgroundColor: '#FFFFFF',
-        height: 'fit-content',
-        position: 'sticky',
-        top: 20,
-      }}
-    >
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: compact ? 1.5 : 2 }}>
       <Typography
         variant="h6"
         sx={{
-          marginBottom: 2,
           fontWeight: 600,
           color: '#000000',
           fontFamily: 'Poppins, sans-serif',
@@ -71,167 +78,95 @@ export default function FormularioCurso({
         Informações do Curso
       </Typography>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <TextField
-          label="Título do Curso"
-          value={titulo}
-          onChange={(e) => setTitulo(e.target.value)}
-          required
-          fullWidth
-          sx={{
-            backgroundColor: '#FFFFFF',
-            '& .MuiInputBase-input': { color: '#000000' },
-            '& .MuiInputLabel-root': { color: '#000000' },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#000000' },
-              '&:hover fieldset': { borderColor: '#000000' },
-              '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-            },
-          }}
-        />
+      <TextField
+        size={fieldSize}
+        label="Título do Curso"
+        value={titulo}
+        onChange={(e) => setTitulo(e.target.value)}
+        required
+        fullWidth
+        sx={defaultFieldSx}
+      />
 
-        <TextField
-          label="Subtítulo do Curso"
-          value={subtitulo}
-          onChange={(e) => setSubtitulo(e.target.value)}
-          fullWidth
-          sx={{
-            backgroundColor: '#FFFFFF',
-            '& .MuiInputBase-input': { color: '#000000' },
-            '& .MuiInputLabel-root': { color: '#000000' },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#000000' },
-              '&:hover fieldset': { borderColor: '#000000' },
-              '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-            },
-          }}
-        />
+      <TextField
+        size={fieldSize}
+        label="Subtítulo do Curso"
+        value={subtitulo}
+        onChange={(e) => setSubtitulo(e.target.value)}
+        fullWidth
+        sx={defaultFieldSx}
+      />
 
-        <TextField
-          label="Categoria"
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
-          required
-          fullWidth
-          sx={{
-            backgroundColor: '#FFFFFF',
-            '& .MuiInputBase-input': { color: '#000000' },
-            '& .MuiInputLabel-root': { color: '#000000' },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#000000' },
-              '&:hover fieldset': { borderColor: '#000000' },
-              '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-            },
-          }}
-        />
+      <TextField
+        size={fieldSize}
+        label="Categoria"
+        value={categoria}
+        onChange={(e) => setCategoria(e.target.value)}
+        required
+        fullWidth
+        sx={defaultFieldSx}
+      />
 
-        <FormControl
-          fullWidth
-          sx={{
-            backgroundColor: '#FFFFFF',
-            '& .MuiInputLabel-root': { color: '#000000' },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#000000' },
-              '&:hover fieldset': { borderColor: '#000000' },
-              '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-            },
+      <FormControl 
+        fullWidth 
+        variant='outlined' 
+        sx={defaultFieldSx}
+      >
+        <InputLabel id='grau-dificuldade-label' sx={{ color: '#000000' }}>
+          Grau de Dificuldade
+        </InputLabel>
+        <Select
+          labelId='grau-dificuldade-label'
+          id='grau-dificuldade'
+          size={fieldSize}
+          value={grauDificuldade}
+          onChange={(e) => setGrauDificuldade(e.target.value)}
+          label="Grau de Dificuldade"
+          sx={{ 
+            color: '#000000',
+            borderRadius: '8px',
+            '& .MuiSelect-icon':{
+              color: '#000000',
+            }
           }}
         >
-          <InputLabel sx={{ color: '#000000' }}>
-            Grau de Dificuldade
-          </InputLabel>
-          <Select
-            value={grauDificuldade}
-            onChange={(e) => setGrauDificuldade(e.target.value)}
-            label="Grau de Dificuldade"
-            sx={{ color: '#000000' }}
-          >
-            <MenuItem value="iniciante">Iniciante</MenuItem>
-            <MenuItem value="intermediario">Intermediário</MenuItem>
-            <MenuItem value="avancado">Avançado</MenuItem>
-          </Select>
-        </FormControl>
+          <MenuItem value="iniciante">Iniciante</MenuItem>
+          <MenuItem value="intermediario">Intermediário</MenuItem>
+          <MenuItem value="avancado">Avançado</MenuItem>
+        </Select>
+      </FormControl>
 
-        <TextField
-          label="Resumo"
-          value={resumo}
-          onChange={(e) => setResumo(e.target.value)}
-          required
-          fullWidth
-          multiline
-          rows={4}
-          sx={{
-            backgroundColor: '#FFFFFF',
-            '& .MuiInputBase-input': { color: '#000000' },
-            '& .MuiInputLabel-root': { color: '#000000' },
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': { borderColor: '#000000' },
-              '&:hover fieldset': { borderColor: '#000000' },
-              '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-            },
-          }}
-        />
+      <TextField
+        size={fieldSize}
+        label="Resumo"
+        value={resumo}
+        onChange={(e) => setResumo(e.target.value)}
+        required
+        fullWidth
+        multiline
+        rows={4}
+        sx={defaultFieldSx}
+      />
 
-        <FormControlLabel
-          control={
-            <Switch
-              checked={isActive}
-              onChange={(e) => setIsActive(e.target.checked)}
-              sx={{
-                '& .MuiSwitch-switchBase.Mui-checked': {
-                  color: '#1F1D2B',
-                },
-                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                  backgroundColor: '#1F1D2B',
-                },
-              }}
-            />
-          }
-          label="Curso Ativo"
+      <Box>
+        <Typography
+          variant="subtitle1"
           sx={{
+            fontWeight: 600,
             color: '#000000',
+            marginBottom: 1,
             fontFamily: 'Poppins, sans-serif',
-            '& .MuiFormControlLabel-label': {
-              color: '#000000',
-              fontFamily: 'Poppins, sans-serif',
-            },
           }}
-        />
+        >
+          IMAGEM DO CURSO
+        </Typography>
 
-        <Box>
-          <Button
-            variant="contained"
-            component="label"
-            sx={{
-              backgroundColor: '#1F1D2B',
-              color: '#FFFFFF',
-              '&:hover': { backgroundColor: '#2a2838' },
-              fontFamily: 'Poppins, sans-serif',
-            }}
-          >
-            {labelBotaoImagem}
-            <input
-              type="file"
-              hidden
-              accept="image/*"
-              onChange={onImageChange}
-            />
-          </Button>
-          {imagemPreview && (
-            <Box sx={{ marginTop: 2 }}>
-              <img
-                src={imagemPreview}
-                alt="Preview"
-                style={{
-                  maxWidth: '200px',
-                  maxHeight: '200px',
-                  borderRadius: '8px',
-                }}
-              />
-            </Box>
-          )}
-        </Box>
+        <UploadImageField
+          value={null}
+          onChange={onImageChange}
+          sx={{ maxWidth: 720 }}
+        />
       </Box>
-    </Paper>
+    </Box>
   );
 }

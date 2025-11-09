@@ -53,25 +53,9 @@ export default function SecaoAulas({
   onAdicionarSecao,
 }: SecaoAulasProps) {
   return (
-    <Paper
-      elevation={3}
-      sx={{
-        padding: 3,
-        backgroundColor: '#FFFFFF',
-      }}
+    <Box
+    sx={{ display: 'flex', flexDirection: 'column'}}
     >
-      <Typography
-        variant="h6"
-        sx={{
-          marginBottom: 2,
-          fontWeight: 600,
-          color: '#000000',
-          fontFamily: 'Poppins, sans-serif',
-        }}
-      >
-        Seções e Aulas
-      </Typography>
-
       {secoes.map((secao, index) => (
         <CardSecao
           key={secao.id}
@@ -101,6 +85,6 @@ export default function SecaoAulas({
       >
         Adicionar Seção
       </Button>
-    </Paper>
+    </Box>
   );
 }

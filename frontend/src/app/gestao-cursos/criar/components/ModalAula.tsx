@@ -13,6 +13,8 @@ import {
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import UploadVideoField from '../../components/UploadVideoField';
+
 
 interface Anexo {
   id: string;
@@ -65,6 +67,21 @@ export function ModalAula({
   onAtualizarAnexoArquivo,
 }: ModalAulaProps) {
   const [erroArquivo, setErroArquivo] = useState<string>('');
+  const fieldSize: 'small' | 'medium' = 'small';
+  const defaultFieldSx = {
+    backgroundColor: 'transparent',
+    maxWidth: 720,
+    '& .MuiInputBase-input': { color: '#000000', py: fieldSize === 'small' ? '6px' : undefined },
+    '& .MuiInputLabel-root': { color: '#000000' },
+    '& .MuiOutlinedInput-root': {
+      borderRadius: '12px',
+      backgroundColor: '#FFFFFF',
+      '& fieldset': { borderColor: '#000000' },
+      '&:hover fieldset': { borderColor: '#000000' },
+      '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
+    },
+  } as any;
+  
 
   // Tipos de arquivo permitidos para anexos (documentos)
   const tiposPermitidos = [
@@ -119,12 +136,25 @@ export function ModalAula({
   };
 
   return (
-    <Dialog open={aberto} onClose={onFechar} maxWidth="md" fullWidth>
+    <Dialog 
+      open={aberto} 
+      onClose={onFechar} 
+      maxWidth="md" 
+      fullWidth
+      PaperProps={{
+        sx: {
+          backgroundColor: '#EDEDED',
+          borderRadius: '16px',
+        }
+      }}
+    >
       <DialogTitle
         sx={{
           fontWeight: 600,
           color: '#000000',
           fontFamily: 'Poppins, sans-serif',
+          fontSize: '1.5rem',
+          padding: '24px',
         }}
       >
         {aulaEmEdicao ? 'Editar Aula' : 'Nova Aula'}
@@ -135,8 +165,20 @@ export function ModalAula({
             {erroArquivo}
           </Alert>
         )}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 1 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, marginTop: 1 }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+              color: '#000000',
+              fontFamily: 'Poppins, sans-serif',
+              marginBottom: 1,
+            }}
+          >
+            Informações da Aula
+          </Typography>
           <TextField
+            size={fieldSize}
             label="Título da Aula"
             value={tempAula.titulo || ''}
             onChange={(e) =>
@@ -144,38 +186,22 @@ export function ModalAula({
             }
             required
             fullWidth
-            sx={{
-              backgroundColor: '#FFFFFF',
-              '& .MuiInputBase-input': { color: '#000000' },
-              '& .MuiInputLabel-root': { color: '#000000' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#000000' },
-                '&:hover fieldset': { borderColor: '#000000' },
-                '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-              },
-            }}
+            sx={defaultFieldSx}
           />
 
           <TextField
+            size={fieldSize}
             label="Subtítulo da Aula"
             value={tempAula.subtitulo || ''}
             onChange={(e) =>
               setTempAula({ ...tempAula, subtitulo: e.target.value })
             }
             fullWidth
-            sx={{
-              backgroundColor: '#FFFFFF',
-              '& .MuiInputBase-input': { color: '#000000' },
-              '& .MuiInputLabel-root': { color: '#000000' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#000000' },
-                '&:hover fieldset': { borderColor: '#000000' },
-                '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-              },
-            }}
+            sx={defaultFieldSx}
           />
 
           <TextField
+            size={fieldSize}
             label="Descrição da Aula"
             value={tempAula.descricao || ''}
             onChange={(e) =>
@@ -184,19 +210,11 @@ export function ModalAula({
             fullWidth
             multiline
             rows={4}
-            sx={{
-              backgroundColor: '#FFFFFF',
-              '& .MuiInputBase-input': { color: '#000000' },
-              '& .MuiInputLabel-root': { color: '#000000' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#000000' },
-                '&:hover fieldset': { borderColor: '#000000' },
-                '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-              },
-            }}
+            sx={defaultFieldSx}
           />
 
           <TextField
+            size={fieldSize}
             label="Duração (minutos)"
             type="number"
             value={tempAula.duracao_minutos || ''}
@@ -204,50 +222,35 @@ export function ModalAula({
               setTempAula({ ...tempAula, duracao_minutos: e.target.value })
             }
             fullWidth
-            sx={{
-              backgroundColor: '#FFFFFF',
-              '& .MuiInputBase-input': { color: '#000000' },
-              '& .MuiInputLabel-root': { color: '#000000' },
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': { borderColor: '#000000' },
-                '&:hover fieldset': { borderColor: '#000000' },
-                '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-              },
-            }}
+            sx={defaultFieldSx}
           />
 
           <Box>
-            <Button
-              variant="contained"
-              component="label"
+            <Typography
+              variant="subtitle1"
               sx={{
-                backgroundColor: '#1F1D2B',
-                color: '#FFFFFF',
-                '&:hover': { backgroundColor: '#2a2838' },
+                fontWeight: 600,
+                color: '#000000',
+                marginBottom: 1,
                 fontFamily: 'Poppins, sans-serif',
               }}
             >
-              {tempAula.video ? 'Trocar Vídeo' : 'Upload Vídeo'}
-              <input
-                type="file"
-                hidden
-                accept="video/*"
-                onChange={handleVideoChange}
-              />
-            </Button>
-            {tempAula.video && (
-              <Typography
-                variant="body2"
-                sx={{
-                  marginTop: 1,
-                  color: '#666666',
-                  fontFamily: 'Poppins, sans-serif',
-                }}
-              >
-                Arquivo: {tempAula.video.name}
-              </Typography>
-            )}
+              VÍDEO DA AULA
+            </Typography>
+
+            <UploadVideoField
+            value={tempAula.video || null}
+            onChange={(file) => setTempAula({ ...tempAula, video: file })}
+            accept="video/*"
+            placeholder="Selecione ou arraste o vídeo da aula"
+            previewWidth={300}
+            showControls
+            maxSizeBytes={500 * 1024 * 1024} // 500 MB
+            sx={{ borderRadius: 3 }}
+          />
+
           </Box>
+
 
           {/* ANEXOS */}
           <Box>
@@ -267,7 +270,7 @@ export function ModalAula({
                   fontFamily: 'Poppins, sans-serif',
                 }}
               >
-                Anexos
+                ANEXOS DA AULA
               </Typography>
               <Button
                 variant="outlined"
@@ -300,22 +303,14 @@ export function ModalAula({
               >
                 <Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
                   <TextField
+                    size={fieldSize}
                     label="Título do Anexo"
                     value={anexo.titulo}
                     onChange={(e) =>
                       onAtualizarAnexoTitulo(anexo.id, e.target.value)
                     }
                     fullWidth
-                    sx={{
-                      backgroundColor: '#FFFFFF',
-                      '& .MuiInputBase-input': { color: '#000000' },
-                      '& .MuiInputLabel-root': { color: '#000000' },
-                      '& .MuiOutlinedInput-root': {
-                        '& fieldset': { borderColor: '#000000' },
-                        '&:hover fieldset': { borderColor: '#000000' },
-                        '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
-                      },
-                    }}
+                    sx={defaultFieldSx}
                   />
                   <Button
                     variant="outlined"
@@ -367,8 +362,16 @@ export function ModalAula({
       <DialogActions>
         <Button
           onClick={onFechar}
+          variant='contained'
           sx={{
-            color: '#000000',
+            borderColor: '#000000',
+            backgroundColor: '#923A3A',
+            color: '#FFFFFF',
+            '&:hover': {
+              borderColor: '#000000',
+              color: '#FFFFFF', 
+              backgroundColor: '#8d1919ff',
+            },
             fontFamily: 'Poppins, sans-serif',
           }}
         >
@@ -380,7 +383,7 @@ export function ModalAula({
           sx={{
             backgroundColor: '#1F1D2B',
             color: '#FFFFFF',
-            '&:hover': { backgroundColor: '#2a2838' },
+            '&:hover': { backgroundColor: '#1F1D2B' },
             fontFamily: 'Poppins, sans-serif',
           }}
         >
