@@ -25,22 +25,7 @@ export default function BotoesAcaoCurso({
 
   return (
     <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-      <Button
-        variant="outlined"
-        onClick={handleVoltar}
-        sx={{
-          borderColor: '#000000',
-          color: '#000000',
-          '&:hover': {
-            borderColor: '#000000',
-            backgroundColor: 'rgba(0, 0, 0, 0.04)',
-          },
-          fontFamily: 'Poppins, sans-serif',
-        }}
-      >
-        Cancelar
-      </Button>
-      <Button
+        <Button
         type="submit"
         variant="contained"
         disabled={loading}
@@ -53,6 +38,22 @@ export default function BotoesAcaoCurso({
       >
         {loading ? 'Processando...' : labelBotaoPrincipal}
       </Button>
+      <Button
+        variant="outlined"
+        onClick={handleVoltar}
+        sx={{
+          backgroundColor: '#6B1515',
+          color: '#FFFFFF',
+          '&:hover': {
+            borderColor: '#6B1515',
+            backgroundColor: '#6B1515',
+          },
+          fontFamily: 'Poppins, sans-serif',
+        }}
+      >
+        Deletar
+      </Button>
+
     </Box>
   );
 }
