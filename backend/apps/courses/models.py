@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.contrib.auth.models import User
 
 
 class Course(models.Model):
@@ -146,3 +147,89 @@ class LessonAttachment(models.Model):
     
     def __str__(self):
         return f"{self.lesson.titulo} - {self.titulo}"
+
+
+class LessonProgress(models.Model):
+    """Modelo para rastrear o progresso do usuário em uma aula."""
+    
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='lesson_progress',
+        verbose_name="Usuário"
+    )
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        related_name='user_progress',
+        verbose_name="Aula"
+    )
+    current_time = models.PositiveIntegerField(
+        default=0,
+        verbose_name="Tempo Atual (segundos)",
+        help_text="Posição atual do vídeo em segundos"
+    )
+    completed = models.BooleanField(
+        default=False,
+        verbose_name="Aula Concluída"
+    )
+    last_watched = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Última Visualização"
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Data de Início"
+    )
+    
+    class Meta:
+        verbose_name = "Progresso da Aula"
+        verbose_name_plural = "Progressos das Aulas"
+        ordering = ['-last_watched']
+        unique_together = ['user', 'lesson']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.lesson.titulo} ({self.current_time}s)"
+
+
+class CourseCompletion(models.Model):
+    """Modelo para registrar a conclusão de um curso pelo usuário."""
+    
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='course_completions',
+        verbose_name="Usuário"
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='completions',
+        verbose_name="Curso"
+    )
+    completed_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Data de Conclusão"
+    )
+    certificate_code = models.CharField(
+        max_length=50,
+        unique=True,
+        verbose_name="Código do Certificado",
+        help_text="Código único para validação do certificado"
+    )
+    
+    class Meta:
+        verbose_name = "Conclusão de Curso"
+        verbose_name_plural = "Conclusões de Cursos"
+        ordering = ['-completed_at']
+        unique_together = ['user', 'course']
+    
+    def __str__(self):
+        return f"{self.user.username} - {self.course.titulo}"
+    
+    def save(self, *args, **kwargs):
+        if not self.certificate_code:
+            # Gera um código único para o certificado
+            import uuid
+            self.certificate_code = f"CERT-{uuid.uuid4().hex[:12].upper()}"
+        super().save(*args, **kwargs)

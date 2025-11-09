@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.parsers import MultiPartParser, FormParser
 from django.db.models import Count, Q
 
-from .models import Course, Section, Lesson, LessonAttachment
+from .models import Course, Section, Lesson, LessonAttachment, LessonProgress, CourseCompletion
 from .serializers import (
     CourseSerializer,
     CourseListSerializer,
@@ -13,7 +13,9 @@ from .serializers import (
     SectionListSerializer,
     LessonSerializer,
     LessonListSerializer,
-    LessonAttachmentSerializer
+    LessonAttachmentSerializer,
+    LessonProgressSerializer,
+    CourseCompletionSerializer
 )
 
 
@@ -171,3 +173,175 @@ class LessonAttachmentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(lesson_id=lesson_id)
         
         return queryset.select_related('lesson')
+
+
+class LessonProgressViewSet(viewsets.ModelViewSet):
+    """ViewSet para gerenciar progresso das aulas."""
+    
+    queryset = LessonProgress.objects.all()
+    serializer_class = LessonProgressSerializer
+    permission_classes = [IsAuthenticated]
+    
+    def get_queryset(self):
+        """Retorna apenas o progresso do usuário autenticado."""
+        return LessonProgress.objects.filter(user=self.request.user).select_related('lesson', 'user')
+    
+    def perform_create(self, serializer):
+        """Associa o progresso ao usuário autenticado."""
+        serializer.save(user=self.request.user)
+    
+    @action(detail=False, methods=['get'], url_path='by-lesson/(?P<lesson_id>[^/.]+)')
+    def by_lesson(self, request, lesson_id=None):
+        """Retorna o progresso do usuário em uma aula específica."""
+        try:
+            progress = LessonProgress.objects.get(user=request.user, lesson_id=lesson_id)
+            serializer = self.get_serializer(progress)
+            return Response(serializer.data)
+        except LessonProgress.DoesNotExist:
+            return Response({'current_time': 0, 'completed': False}, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['post'], url_path='update-progress')
+    def update_progress(self, request):
+        """Atualiza ou cria o progresso de uma aula."""
+        lesson_id = request.data.get('lesson')
+        current_time = request.data.get('current_time', 0)
+        completed = request.data.get('completed', False)
+        
+        if not lesson_id:
+            return Response({'error': 'lesson_id é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verifica se a aula existe
+        try:
+            lesson = Lesson.objects.get(id=lesson_id)
+        except Lesson.DoesNotExist:
+            return Response({'error': 'Aula não encontrada'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Atualiza ou cria o progresso
+        progress, created = LessonProgress.objects.update_or_create(
+            user=request.user,
+            lesson=lesson,
+            defaults={
+                'current_time': current_time,
+                'completed': completed
+            }
+        )
+        
+        serializer = self.get_serializer(progress)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'], url_path='last-watched-lesson/(?P<course_id>[^/.]+)')
+    def last_watched_lesson(self, request, course_id=None):
+        """Retorna a última aula assistida de um curso específico."""
+        try:
+            # Busca o curso
+            course = Course.objects.get(id=course_id)
+            
+            # Busca todos os IDs de aulas do curso
+            lesson_ids = Lesson.objects.filter(
+                section__course=course
+            ).values_list('id', flat=True)
+            
+            # Busca a última aula assistida pelo usuário neste curso
+            last_progress = LessonProgress.objects.filter(
+                user=request.user,
+                lesson_id__in=lesson_ids
+            ).order_by('-last_watched').first()
+            
+            if last_progress:
+                return Response({
+                    'lesson_id': last_progress.lesson.id,
+                    'last_watched': last_progress.last_watched,
+                    'current_time': last_progress.current_time,
+                    'completed': last_progress.completed
+                }, status=status.HTTP_200_OK)
+            else:
+                # Se não há progresso, retorna a primeira aula do curso
+                first_lesson = Lesson.objects.filter(
+                    section__course=course
+                ).order_by('section__ordem', 'ordem').first()
+                
+                if first_lesson:
+                    return Response({
+                        'lesson_id': first_lesson.id,
+                        'last_watched': None,
+                        'current_time': 0,
+                        'completed': False
+                    }, status=status.HTTP_200_OK)
+                else:
+                    return Response({'error': 'Nenhuma aula encontrada neste curso'}, status=status.HTTP_404_NOT_FOUND)
+                    
+        except Course.DoesNotExist:
+            return Response({'error': 'Curso não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class CourseCompletionViewSet(viewsets.ModelViewSet):
+    """ViewSet para gerenciar conclusões de curso."""
+    
+    serializer_class = CourseCompletionSerializer
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['get', 'post', 'head', 'options']  # Somente leitura e criação
+    
+    def get_queryset(self):
+        """Retorna apenas as conclusões do usuário atual."""
+        return CourseCompletion.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        """Associa o usuário atual ao criar conclusão."""
+        serializer.save(user=self.request.user)
+    
+    @action(detail=False, methods=['post'], url_path='complete-course')
+    def complete_course(self, request):
+        """Marca um curso como concluído pelo usuário."""
+        course_id = request.data.get('course')
+        
+        if not course_id:
+            return Response({'error': 'course_id é obrigatório'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verifica se o curso existe
+        try:
+            course = Course.objects.get(id=course_id)
+        except Course.DoesNotExist:
+            return Response({'error': 'Curso não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Verifica se o usuário já concluiu o curso
+        existing = CourseCompletion.objects.filter(user=request.user, course=course).first()
+        if existing:
+            serializer = self.get_serializer(existing)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        # Cria a conclusão do curso
+        completion = CourseCompletion.objects.create(
+            user=request.user,
+            course=course
+        )
+        
+        serializer = self.get_serializer(completion)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    
+    @action(detail=False, methods=['get'], url_path='by-course/(?P<course_id>[^/.]+)')
+    def by_course(self, request, course_id=None):
+        """Retorna a conclusão de um curso específico."""
+        try:
+            completion = CourseCompletion.objects.get(user=request.user, course_id=course_id)
+            serializer = self.get_serializer(completion)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except CourseCompletion.DoesNotExist:
+            return Response({'completed': False}, status=status.HTTP_200_OK)
+    
+    @action(detail=False, methods=['get'], url_path='by-code/(?P<code>[^/.]+)')
+    def by_code(self, request, code=None):
+        """Busca um certificado pelo código - apenas o dono pode visualizar."""
+        try:
+            completion = CourseCompletion.objects.get(certificate_code=code)
+            
+            # Verifica se o usuário autenticado é o dono do certificado
+            if completion.user != request.user:
+                return Response(
+                    {'error': 'Você não tem permissão para visualizar este certificado'}, 
+                    status=status.HTTP_403_FORBIDDEN
+                )
+            
+            serializer = self.get_serializer(completion)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except CourseCompletion.DoesNotExist:
+            return Response({'error': 'Certificado não encontrado'}, status=status.HTTP_404_NOT_FOUND)
