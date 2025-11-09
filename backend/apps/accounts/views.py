@@ -82,6 +82,12 @@ class ChangePasswordView(generics.UpdateAPIView):
 def user_me(request):
     """Retorna os dados do usuário autenticado."""
     user = request.user
+    
+    # Busca o nome completo do inmate, se existir
+    full_name = None
+    if hasattr(user, 'inmate'):
+        full_name = user.inmate.full_name
+    
     return Response({
         "id": user.id,
         "username": user.username,
@@ -89,4 +95,5 @@ def user_me(request):
         "role": getattr(user, "role", "USER"),
         "is_staff": user.is_staff,
         "is_superuser": user.is_superuser,
+        "full_name": full_name,
     })

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Course, Section, Lesson, LessonAttachment
+from .models import Course, Section, Lesson, LessonAttachment, LessonProgress, CourseCompletion
 
 
 class SectionInline(admin.TabularInline):
@@ -143,5 +143,58 @@ class LessonAttachmentAdmin(admin.ModelAdmin):
         ('Datas', {
             'fields': ('created_at',),
             'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(LessonProgress)
+class LessonProgressAdmin(admin.ModelAdmin):
+    """Admin para gerenciar progresso das aulas."""
+    
+    list_display = [
+        'user',
+        'lesson',
+        'current_time',
+        'completed',
+        'last_watched'
+    ]
+    list_filter = ['completed', 'last_watched', 'created_at']
+    search_fields = ['user__username', 'user__email', 'lesson__titulo']
+    readonly_fields = ['created_at', 'last_watched']
+    
+    fieldsets = (
+        ('Informações do Progresso', {
+            'fields': ('user', 'lesson')
+        }),
+        ('Progresso', {
+            'fields': ('current_time', 'completed')
+        }),
+        ('Datas', {
+            'fields': ('last_watched', 'created_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+
+@admin.register(CourseCompletion)
+class CourseCompletionAdmin(admin.ModelAdmin):
+    """Admin para gerenciar conclusões de curso."""
+    
+    list_display = [
+        'user',
+        'course',
+        'certificate_code',
+        'completed_at'
+    ]
+    list_filter = ['completed_at', 'course']
+    search_fields = ['user__username', 'user__email', 'course__titulo', 'certificate_code']
+    readonly_fields = ['completed_at', 'certificate_code']
+    
+    fieldsets = (
+        ('Informações da Conclusão', {
+            'fields': ('user', 'course')
+        }),
+        ('Certificado', {
+            'fields': ('certificate_code', 'completed_at')
         }),
     )

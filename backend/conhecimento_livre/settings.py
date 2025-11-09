@@ -88,6 +88,9 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "db.sqlite3",
+        "OPTIONS": {
+            "timeout": 20,  # Increase timeout to 20 seconds to handle concurrent writes
+        }
     }
 }
 
@@ -107,6 +110,7 @@ USE_TZ = True
 
 # --- Estáticos ---
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # --- DRF ---

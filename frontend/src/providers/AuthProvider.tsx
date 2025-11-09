@@ -11,6 +11,7 @@ interface User {
   is_staff: boolean;
   is_superuser: boolean;
   name?: string;
+  full_name?: string;
 }
 
 interface AuthContextType {
@@ -23,7 +24,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Rotas que não exigem autenticação
-const PUBLIC_ROUTES = ["/auth/login", "/auth/register", "/"];
+const PUBLIC_ROUTES = ["/auth/login", "/auth/register"];
 
 interface AuthProviderProps {
   children: ReactNode;
@@ -37,12 +38,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   // Carrega dados do usuário e redireciona para /auth/login se não autenticado em rotas protegidas
   const loadUser = async () => {
+    // Se já está em rota pública, não tenta carregar usuário
+    if (pathname && PUBLIC_ROUTES.includes(pathname)) {
+      setLoading(false);
+      return;
+    }
+
     try {
       const data = await me();
       setUser(data as User);
       setLoading(false);
-    } catch (error) {
-      console.error("Erro ao carregar usuário:", error);
+    } catch (error: any) {
+      // Não loga erro se for falta de token (situação esperada)
+      if (!error?.message?.includes("Sem refresh token")) {
+        console.error("Erro ao carregar usuário:", error);
+      }
 
       // Se não há tokens ou falha ao validar, faz logout completo
       if (typeof window !== "undefined") {

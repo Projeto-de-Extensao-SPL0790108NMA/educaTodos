@@ -1,0 +1,126 @@
+{
+  "cursos": [
+    {
+      "titulo": "Introdução à Programação Python",
+      "subtitulo": "Aprenda Python do zero",
+      "categoria": "Tecnologia",
+      "grau_dificuldade": "iniciante",
+      "resumo": "Curso completo de Python para iniciantes. Aprenda os fundamentos da programação de forma prática e objetiva.",
+      "imagem": "imagens/python-curso.jpg",
+      "is_active": true,
+      "secoes": [
+        {
+          "titulo": "Fundamentos de Python",
+          "subtitulo": "Conceitos básicos",
+          "descricao": "Nesta seção você aprenderá os conceitos fundamentais da linguagem Python.",
+          "descricao_subtitulo": "Começando com Python",
+          "ordem": 1,
+          "aulas": [
+            {
+              "titulo": "Instalação e Configuração",
+              "subtitulo": "Preparando o ambiente",
+              "descricao": "Aprenda a instalar Python e configurar seu ambiente de desenvolvimento.",
+              "video": "videos/aula01-instalacao.mp4",
+              "duracao_minutos": 15,
+              "ordem": 1,
+              "anexos": [
+                {
+                  "titulo": "Guia de Instalação",
+                  "arquivo": "anexos/guia-instalacao.pdf"
+                },
+                {
+                  "titulo": "Comandos Básicos",
+                  "arquivo": "anexos/comandos-basicos.txt"
+                }
+              ]
+            },
+            {
+              "titulo": "Variáveis e Tipos de Dados",
+              "subtitulo": "Trabalhando com dados",
+              "descricao": "Entenda como funcionam variáveis e os principais tipos de dados em Python.",
+              "video": "videos/aula02-variaveis.mp4",
+              "duracao_minutos": 20,
+              "ordem": 2,
+              "anexos": [
+                {
+                  "titulo": "Exercícios - Variáveis",
+                  "arquivo": "anexos/exercicios-variaveis.pdf"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "titulo": "Estruturas de Controle",
+          "subtitulo": "If, While, For",
+          "descricao": "Aprenda a controlar o fluxo de execução do seu programa.",
+          "descricao_subtitulo": "Tomando decisões no código",
+          "ordem": 2,
+          "aulas": [
+            {
+              "titulo": "Condicionais - If/Else",
+              "subtitulo": "Tomando decisões",
+              "descricao": "Como usar estruturas condicionais para tomar decisões no código.",
+              "video": "videos/aula03-condicionais.mp4",
+              "duracao_minutos": 25,
+              "ordem": 1,
+              "anexos": []
+            },
+            {
+              "titulo": "Loops - For e While",
+              "subtitulo": "Repetindo ações",
+              "descricao": "Aprenda a usar loops para repetir ações de forma eficiente.",
+              "video": "videos/aula04-loops.mp4",
+              "duracao_minutos": 30,
+              "ordem": 2,
+              "anexos": [
+                {
+                  "titulo": "Exercícios - Loops",
+                  "arquivo": "anexos/exercicios-loops.pdf"
+                },
+                {
+                  "titulo": "Solução dos Exercícios",
+                  "arquivo": "anexos/solucao-loops.py"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "titulo": "Matemática Básica",
+      "subtitulo": "Fundamentos matemáticos essenciais",
+      "categoria": "Matemática",
+      "grau_dificuldade": "iniciante",
+      "resumo": "Curso de matemática básica abordando aritmética, álgebra e geometria fundamental.",
+      "imagem": "imagens/matematica-curso.jpg",
+      "is_active": true,
+      "secoes": [
+        {
+          "titulo": "Aritmética",
+          "subtitulo": "Operações básicas",
+          "descricao": "Aprenda as quatro operações fundamentais da matemática.",
+          "descricao_subtitulo": "A base de tudo",
+          "ordem": 1,
+          "aulas": [
+            {
+              "titulo": "Adição e Subtração",
+              "subtitulo": "Operações básicas",
+              "descricao": "Entenda como funcionam adição e subtração com exemplos práticos.",
+              "video": "videos/matematica-01-adicao-subtracao.mp4",
+              "duracao_minutos": 18,
+              "ordem": 1,
+              "anexos": [
+                {
+                  "titulo": "Lista de Exercícios",
+                  "arquivo": "anexos/exercicios-adicao-subtracao.pdf"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

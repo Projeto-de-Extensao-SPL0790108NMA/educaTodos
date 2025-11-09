@@ -65,8 +65,8 @@ export default function Sidebar() {
   const studentMenuItems = [
     { text: "Início", icon: Icons.HouseIcon(), path: "/" },
     { text: "Meus Certificados", icon: Icons.HatIcon(), path: "/certificados" },
-    { text: "Meu Desempenho", icon: Icons.GraphIcon(), path: "/desempenho" },
-    { text: "Cursando", icon: Icons.BookIcon(), path: "/cursando" },
+    { text: "Meus Cursos", icon: Icons.BookIcon(), path: "/cursando" },
+    { text: "Cursos", icon: Icons.UserAddIcon(), path: "/cursos" },
   ];
 
   const adminMenuItems = [
