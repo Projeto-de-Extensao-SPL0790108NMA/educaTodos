@@ -1,0 +1,82 @@
+name: CI - Build & Push Docker Images
+
+# Aciona o workflow em pushes para a branch 'main'
+# E apenas se houver alterações nas pastas 'backend' ou 'frontend'
+on:
+  push:
+    branches: [ "main, development, production" ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+    paths-ignore:
+      - "**.md"
+  
+  # Permite executar manualmente
+  workflow_dispatch:
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Necessário para fazer push para o GHCR
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # Define o nome da imagem como: ghcr.io/USER/REPO-backend
+          images: ghcr.io/${{ github.repository }}-backend
+
+      - name: Build and push Backend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend    # <--- Aponta para a pasta do backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write # Necessário para fazer push para o GHCR
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry (GHCR)
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # Define o nome da imagem como: ghcr.io/USER/REPO-frontend
+          images: ghcr.io/${{ github.repository }}-frontend
+
+      - name: Build and push Frontend Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend   # <--- Aponta para a pasta do frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
