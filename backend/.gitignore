@@ -14,7 +14,7 @@ staticfiles/
 
 # Env & secrets
 .env
-.env.* 
+.env.
 *.key
 *.pem
 
@@ -34,3 +34,7 @@ Thumbs.db
 coverage/
 htmlcov/
 .pytest_cache/
+
+# Scripts
+scripts/
+usuarios_criados.txt

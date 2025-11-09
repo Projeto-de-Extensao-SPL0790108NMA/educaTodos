@@ -6,5 +6,6 @@ export const GraphIcon = '/icons/graph.svg';
 export const BookIcon = '/icons/book.svg';
 export const ChevronLeftIcon = '/icons/chevronleft.svg';
 export const UserAddIcon = '/icons/useradd.svg';
+export const CoursesIcon = '/icons/courses.svg';
 
 // (os ícones já são exportados acima como constantes de string)

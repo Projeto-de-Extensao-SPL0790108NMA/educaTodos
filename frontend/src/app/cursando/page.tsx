@@ -340,6 +340,7 @@ export default function CursandoPage() {
             textAlign: 'center',
             py: 6,
             backgroundColor: '#f5f5f5',
+            color: '#1f1d2b',
             borderRadius: 2,
           }}
         >
@@ -348,7 +349,7 @@ export default function CursandoPage() {
               ? 'Você não possui cursos em progresso'
               : 'Você ainda não concluiu nenhum curso'}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" sx={{ mb: 3 }}>
             {tabValue === 0
               ? 'Explore nossos cursos e comece a aprender agora'
               : 'Continue estudando para conquistar seu primeiro certificado'}
@@ -359,6 +360,7 @@ export default function CursandoPage() {
             sx={{
               backgroundColor: '#2C5F2D',
               '&:hover': { backgroundColor: '#1e4620' },
+              color: '#FFFFFF',
             }}
           >
             Explorar Cursos

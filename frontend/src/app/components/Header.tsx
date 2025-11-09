@@ -1,23 +1,36 @@
 "use client";
 
 import * as React from 'react';
-import { AppBar, Toolbar, Box, InputBase, IconButton, Menu, MenuItem, ListItemText } from "@mui/material";
+import { 
+  AppBar, 
+  Toolbar, 
+  Box, 
+  InputBase, 
+  IconButton, 
+  Menu, 
+  MenuItem, 
+  ListItemText, 
+  Typography,
+} from "@mui/material";
 import { theme } from '../theme';
 import { ThemeProvider } from '@emotion/react';
 import { useSidebar } from './SidebarContext';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/providers/AuthProvider';
+import SearchModal from './SearchModal';
 
 interface HeaderProps {
   isAdmin?: boolean;
 }
 
 export default function Header({ isAdmin }: HeaderProps) {
-  const { toggleSidebar } = useSidebar();
+  const { toggleSidebar, open } = useSidebar();
   const { logout } = useAuth();
   const router = useRouter();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+  const menuOpen = Boolean(anchorEl);
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [showSearchModal, setShowSearchModal] = React.useState(false);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -27,9 +40,25 @@ export default function Header({ isAdmin }: HeaderProps) {
     setAnchorEl(null);
   };
 
-  const handleProfile = () => {
-    router.push('/perfil');
-    handleClose();
+  // Redireciona para a home apropriada baseado no tipo de usuário
+  const handleLogoClick = () => {
+    if (isAdmin) {
+      router.push('/visao-geral');
+    } else {
+      router.push('/');
+    }
+  };
+
+  // Handler para pressionar Enter na barra de busca do header
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter' && searchQuery.trim()) {
+      setShowSearchModal(true);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowSearchModal(false);
+    setSearchQuery('');
   };
 
   // Logout completo: limpa tokens, cookies e força reload para limpar cache
@@ -54,35 +83,56 @@ export default function Header({ isAdmin }: HeaderProps) {
       sx={{
         boxShadow: 'none',
         p: 1,
+        zIndex: (theme) => theme.zIndex.drawer + 1, // Fica acima do drawer
+        borderBottom: '1px solid #1F1D2B',
       }} 
     >
-      <Toolbar>
-        <IconButton 
-          onClick={toggleSidebar}
-          sx={{
-            '& img': {
-              width: 60,
-              height: 'auto',
-              cursor: 'pointer',
-            }
-          }}
-        >
-          <img
-            src='/Logo.png'
-            alt='Logo'
-          />
-        </IconButton>
+            <Toolbar>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <IconButton 
+            onClick={handleLogoClick}
+            sx={{
+              '& img': {
+                width: 60,
+                height: 'auto',
+                cursor: 'pointer',
+              }
+            }}
+          >
+            <img
+              src='/Logo.png'
+              alt='Logo'
+            />
+          </IconButton>
+          {open && (
+            <Typography 
+              variant="h6"
+              sx={{ 
+                ml: 2,
+                color: isAdmin ? '#1F1D2B' : '#1F1D2B',
+                whiteSpace: 'nowrap',
+                fontWeight: 600,
+                transition: 'opacity 0.3s ease',
+                cursor: 'pointer',
+              }}
+              onClick={handleLogoClick}
+            >
+              {isAdmin ? 'Painel de Controle' : 'Painel do Aluno'}
+            </Typography>
+          )}
+        </Box>
+        <Box sx={{ flexGrow: 1 }} />
         {!isAdmin && (
           <Box
             sx={{
-              flexGrow: 1,
               display: "flex",
               alignItems: "center",
               backgroundColor: "#383838ff",
               borderRadius: 60,
               px: 2,
-              ml: 180,
-              width: 10,
+              width: 'auto',
+              minWidth: '300px',
+              mr: 2,
             }}
           >
             <img
@@ -96,6 +146,9 @@ export default function Header({ isAdmin }: HeaderProps) {
             />
             <InputBase
               placeholder="Buscar cursos..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyPress={handleKeyPress}
               sx={{ 
                 ml: 1, 
                 flex: 1,
@@ -104,13 +157,12 @@ export default function Header({ isAdmin }: HeaderProps) {
             />
           </Box>
         )}
-        <Box sx={{ flexGrow: 1 }} />
         <IconButton 
           color="inherit" 
           onClick={handleClick}
-          aria-controls={open ? 'profile-menu' : undefined}
+          aria-controls={menuOpen ? 'profile-menu' : undefined}
           aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
+          aria-expanded={menuOpen ? 'true' : undefined}
           sx={{ 
             ml: 2, 
             alignItems: "center",
@@ -129,7 +181,7 @@ export default function Header({ isAdmin }: HeaderProps) {
         <Menu
           id="profile-menu"
           anchorEl={anchorEl}
-          open={open}
+          open={menuOpen}
           onClose={handleClose}
           onClick={handleClose}
           PaperProps={{
@@ -146,9 +198,7 @@ export default function Header({ isAdmin }: HeaderProps) {
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         >
-          <MenuItem onClick={handleProfile}>
-            <ListItemText>Perfil</ListItemText>
-          </MenuItem>
+
           <MenuItem onClick={handleLogout}>
 
             <ListItemText>Deslogar</ListItemText>
@@ -156,6 +206,14 @@ export default function Header({ isAdmin }: HeaderProps) {
         </Menu>
       </Toolbar>
     </AppBar>
+
+    {/* Modal de resultados de busca */}
+    <SearchModal 
+      open={showSearchModal}
+      onClose={handleCloseModal}
+      initialQuery={searchQuery}
+    />
+
     </ThemeProvider>
   );
 }
