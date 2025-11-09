@@ -26,6 +26,11 @@ export default function RootLayout({
 
   return (
     <html lang="pt-BR" className={poppins.className}>
+      <head>
+        <title>Conhecimento Livre</title>
+        <link rel="icon" href="/Logo.png" type="image/png" />
+        <link rel="shortcut icon" href="/Logo.png" type="image/png" />
+      </head>
       <body suppressHydrationWarning>
         <AuthProvider>
           <ThemeProvider theme={theme}>

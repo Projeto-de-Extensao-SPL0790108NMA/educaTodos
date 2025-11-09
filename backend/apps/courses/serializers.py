@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Course, Section, Lesson, LessonAttachment
+from .models import Course, Section, Lesson, LessonAttachment, LessonProgress, CourseCompletion
 
 
 class LessonAttachmentSerializer(serializers.ModelSerializer):
@@ -62,7 +62,7 @@ class LessonListSerializer(serializers.ModelSerializer):
 class SectionSerializer(serializers.ModelSerializer):
     """Serializer para seções."""
     
-    lessons = LessonListSerializer(many=True, read_only=True)
+    lessons = LessonSerializer(many=True, read_only=True)
     course_name = serializers.CharField(source='course.titulo', read_only=True)
     total_lessons = serializers.SerializerMethodField()
     
@@ -111,7 +111,7 @@ class SectionListSerializer(serializers.ModelSerializer):
 class CourseSerializer(serializers.ModelSerializer):
     """Serializer para cursos."""
     
-    sections = SectionListSerializer(many=True, read_only=True)
+    sections = SectionSerializer(many=True, read_only=True)
     total_sections = serializers.SerializerMethodField()
     total_lessons = serializers.SerializerMethodField()
     
@@ -173,3 +173,64 @@ class CourseListSerializer(serializers.ModelSerializer):
         for section in obj.sections.all():
             total += section.lessons.count()
         return total
+
+
+class LessonProgressSerializer(serializers.ModelSerializer):
+    """Serializer para progresso de aula."""
+    
+    lesson_title = serializers.CharField(source='lesson.titulo', read_only=True)
+    
+    class Meta:
+        model = LessonProgress
+        fields = [
+            'id',
+            'user',
+            'lesson',
+            'lesson_title',
+            'current_time',
+            'completed',
+            'last_watched',
+            'created_at'
+        ]
+        read_only_fields = ['id', 'user', 'last_watched', 'created_at']
+
+
+class CourseCompletionSerializer(serializers.ModelSerializer):
+    """Serializer para conclusão de curso."""
+    
+    course_title = serializers.CharField(source='course.titulo', read_only=True)
+    course_image = serializers.ImageField(source='course.imagem', read_only=True)
+    course_category = serializers.CharField(source='course.categoria', read_only=True)
+    course_difficulty = serializers.CharField(source='course.grau_dificuldade', read_only=True)
+    user_name = serializers.CharField(source='user.inmate.full_name', read_only=True)
+    user_username = serializers.CharField(source='user.username', read_only=True)
+    total_hours = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = CourseCompletion
+        fields = [
+            'id',
+            'user',
+            'user_name',
+            'user_username',
+            'course',
+            'course_title',
+            'course_image',
+            'course_category',
+            'course_difficulty',
+            'completed_at',
+            'certificate_code',
+            'total_hours'
+        ]
+        read_only_fields = ['id', 'user', 'completed_at', 'certificate_code']
+    
+    def get_total_hours(self, obj):
+        """Calcula o total de horas do curso somando a duração de todas as aulas."""
+        total_minutes = 0
+        for section in obj.course.sections.all():
+            for lesson in section.lessons.all():
+                total_minutes += lesson.duracao_minutos
+        
+        # Converte para horas
+        hours = total_minutes / 60
+        return round(hours, 1)  # Retorna com 1 casa decimal

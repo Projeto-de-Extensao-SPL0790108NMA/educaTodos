@@ -5,7 +5,15 @@ async function refreshToken(): Promise<string> {
 
   const refresh = typeof window !== "undefined" ? localStorage.getItem("refresh") : null;
  
-  if (!refresh) throw new Error("Sem refresh token");
+  if (!refresh) {
+    // Limpa tokens e redireciona para login
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      document.cookie = "access=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    throw new Error("Sem refresh token");
+  }
 
   const r = await fetch(`${API_URL}/api/auth/token/refresh/`, {
     method: "POST",
@@ -16,7 +24,15 @@ async function refreshToken(): Promise<string> {
   // Tenta desserializar o JSON retornado.
   const d = await r.json();
 
-  if (!r.ok || !d.access) throw new Error("Falha ao renovar token");
+  if (!r.ok || !d.access) {
+    // Token inválido - limpa e redireciona
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      document.cookie = "access=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    }
+    throw new Error("Falha ao renovar token");
+  }
 
   // Persiste o novo access token no localStorage e também em cookie
   localStorage.setItem("access", d.access);
@@ -44,9 +60,19 @@ export async function apiFetch<T = any>(path: string, options: RequestInit = {})
 
   // Se o backend respondeu 401 (token inválido/expirado), tenta renovar e repetir.
   if (res.status === 401) {
-    const newAccess = await refreshToken();
-    (headers as any).Authorization = `Bearer ${newAccess}`;
-    res = await fetch(url, { ...options, headers });
+    try {
+      const newAccess = await refreshToken();
+      (headers as any).Authorization = `Bearer ${newAccess}`;
+      res = await fetch(url, { ...options, headers });
+    } catch (refreshError) {
+      // Falha ao renovar token - limpa dados mas não redireciona (AuthProvider faz isso)
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("access");
+        localStorage.removeItem("refresh");
+        document.cookie = "access=; Path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      }
+      throw refreshError;
+    }
   }
 
   const data = await res.json().catch(() => ({}));
