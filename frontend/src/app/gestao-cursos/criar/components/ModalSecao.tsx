@@ -43,7 +43,7 @@ export function ModalSecao({
   onSalvar,
 }: ModalSecaoProps) {
   return (
-    <Dialog open={aberto} onClose={onFechar} maxWidth="sm" fullWidth>
+    <Dialog open={aberto} onClose={onFechar} maxWidth="sm" fullWidth PaperProps={{sx: { backgroundColor: '#EDEDED', borderRadius: '18px'}}}>
       <DialogTitle
         sx={{
           fontWeight: 600,
@@ -64,10 +64,12 @@ export function ModalSecao({
             required
             fullWidth
             sx={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'transparent',
               '& .MuiInputBase-input': { color: '#000000' },
               '& .MuiInputLabel-root': { color: '#000000' },
               '& .MuiOutlinedInput-root': {
+                borderRadius: '18px',
+                backgroundColor: '#FFFFFF',
                 '& fieldset': { borderColor: '#000000' },
                 '&:hover fieldset': { borderColor: '#000000' },
                 '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
@@ -83,10 +85,12 @@ export function ModalSecao({
             }
             fullWidth
             sx={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'transparent',
               '& .MuiInputBase-input': { color: '#000000' },
               '& .MuiInputLabel-root': { color: '#000000' },
               '& .MuiOutlinedInput-root': {
+                borderRadius: '18px',
+                backgroundColor: '#FFFFFF',
                 '& fieldset': { borderColor: '#000000' },
                 '&:hover fieldset': { borderColor: '#000000' },
                 '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
@@ -102,10 +106,12 @@ export function ModalSecao({
             }
             fullWidth
             sx={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'transparent',
               '& .MuiInputBase-input': { color: '#000000' },
               '& .MuiInputLabel-root': { color: '#000000' },
               '& .MuiOutlinedInput-root': {
+                borderRadius: '18px',
+                backgroundColor: '#FFFFFF',
                 '& fieldset': { borderColor: '#000000' },
                 '&:hover fieldset': { borderColor: '#000000' },
                 '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
@@ -123,10 +129,12 @@ export function ModalSecao({
             multiline
             rows={4}
             sx={{
-              backgroundColor: '#FFFFFF',
+              backgroundColor: 'transparent',
               '& .MuiInputBase-input': { color: '#000000' },
               '& .MuiInputLabel-root': { color: '#000000' },
               '& .MuiOutlinedInput-root': {
+                borderRadius: '18px',
+                backgroundColor: '#FFFFFF',
                 '& fieldset': { borderColor: '#000000' },
                 '&:hover fieldset': { borderColor: '#000000' },
                 '&.Mui-focused fieldset': { borderColor: '#1F1D2B' },
@@ -138,8 +146,16 @@ export function ModalSecao({
       <DialogActions>
         <Button
           onClick={onFechar}
+          variant='contained'
           sx={{
-            color: '#000000',
+            borderColor: '#000000',
+          backgroundColor: '#923A3A',
+          color: '#FFFFFF',
+          '&:hover': {
+            borderColor: '#000000',
+            color: '#FFFFFF', 
+            backgroundColor: '#8d1919ff',
+          },
             fontFamily: 'Poppins, sans-serif',
           }}
         >
@@ -151,7 +167,7 @@ export function ModalSecao({
           sx={{
             backgroundColor: '#1F1D2B',
             color: '#FFFFFF',
-            '&:hover': { backgroundColor: '#2a2838' },
+            '&:hover': { backgroundColor: '#1F1D2B' },
             fontFamily: 'Poppins, sans-serif',
           }}
         >

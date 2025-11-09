@@ -15,8 +15,9 @@ export default function LayoutCursoDuasColunas({
       sx={{
         display: 'grid',
         gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-        gap: 3,
+        gap: 2,
         marginBottom: 3,
+        p: 3,
       }}
     >
       {/* COLUNA ESQUERDA */}
@@ -24,6 +25,7 @@ export default function LayoutCursoDuasColunas({
 
       {/* COLUNA DIREITA */}
       <Box>{colunaDireita}</Box>
+      
     </Box>
   );
 }
