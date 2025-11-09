@@ -1,7 +1,5 @@
 name: CI - Build & Push Docker Images
 
-# Aciona o workflow em pushes para a branch 'main'
-# E apenas se houver alterações nas pastas 'backend' ou 'frontend'
 on:
   push:
     branches: [ "main, development, production" ]
@@ -9,7 +7,6 @@ on:
       - 'backend/**'
       - 'frontend/**'
   
-  # Permite executar manualmente
   workflow_dispatch:
 
 jobs:
@@ -17,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # Necessário para fazer push para o GHCR
+      packages: write
 
     steps:
       - name: Checkout repository
@@ -50,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: write # Necessário para fazer push para o GHCR
+      packages: write
 
     steps:
       - name: Checkout repository
@@ -67,13 +64,12 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          # Define o nome da imagem como: ghcr.io/USER/REPO-frontend
           images: ghcr.io/${{ github.repository }}-frontend
 
       - name: Build and push Frontend Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend   # <--- Aponta para a pasta do frontend
+          context: ./frontend
           file: ./frontend/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
