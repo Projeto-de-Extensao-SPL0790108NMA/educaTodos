@@ -24,12 +24,34 @@ export default function RootLayout({
   const pathname = usePathname();
   const isAuthPage = pathname?.includes("/login");
 
+  // Define título e favicon
+  React.useEffect(() => {
+    // Título
+    document.title = 'Conhecimento Livre';
+    
+    // Remove favicons antigos
+    const existingIcons = document.querySelectorAll('link[rel*="icon"]');
+    existingIcons.forEach(icon => icon.remove());
+    
+    // Adiciona novo favicon
+    const link = document.createElement('link');
+    link.rel = 'icon';
+    link.type = 'image/png';
+    link.href = '/Logo.png';
+    document.head.appendChild(link);
+    
+    // Adiciona apple touch icon
+    const appleLink = document.createElement('link');
+    appleLink.rel = 'apple-touch-icon';
+    appleLink.href = '/Logo.png';
+    document.head.appendChild(appleLink);
+  }, []);
+
   return (
     <html lang="pt-BR" className={poppins.className}>
       <head>
-        <title>Conhecimento Livre</title>
-        <link rel="icon" href="/Logo.png" type="image/png" />
-        <link rel="shortcut icon" href="/Logo.png" type="image/png" />
+        <link rel="icon" href="/Logo.png" type="image/png" sizes="any" />
+        <link rel="apple-touch-icon" href="/Logo.png" />
       </head>
       <body suppressHydrationWarning>
         <AuthProvider>
