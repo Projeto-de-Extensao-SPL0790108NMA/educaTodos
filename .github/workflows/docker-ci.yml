@@ -8,8 +8,6 @@ on:
     paths:
       - 'backend/**'
       - 'frontend/**'
-    paths-ignore:
-      - "**.md"
   
   # Permite executar manualmente
   workflow_dispatch:
