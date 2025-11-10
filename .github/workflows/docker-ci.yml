@@ -1,11 +1,20 @@
 name: CI - Build & Push Docker Images
 
 on:
+  pull_request:
+    branches:
+      - main
+      - development
+      - production
+    paths-ignore:
+      - "**.md"
   push:
-    branches: [ "main, development, production" ]
-    paths:
-      - 'backend/**'
-      - 'frontend/**'
+    branches:
+      - main
+      - development
+      - production
+    paths-ignore:
+      - "**.md"
   
   workflow_dispatch:
 
