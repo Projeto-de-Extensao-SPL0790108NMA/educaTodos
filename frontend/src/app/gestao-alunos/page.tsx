@@ -32,6 +32,7 @@ import SearchIcon from '@mui/icons-material/Search'
 import { useRouter } from 'next/navigation'
 import { apiFetch } from '@/services/apiClient'
 import EditInmateModal from '../components/EditInmateModal'
+import AddStudentModal from '../components/AddStudentModal'
 
 interface Inmate {
   id: string
@@ -47,6 +48,7 @@ export default function GestaoAlunosPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [openEditModal, setOpenEditModal] = useState(false)
+  const [openAddModal, setOpenAddModal] = useState(false)
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false)
   const [selectedInmate, setSelectedInmate] = useState<Inmate | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -78,7 +80,15 @@ export default function GestaoAlunosPage() {
   }
 
   const handleAddStudent = () => {
-    router.push('/gestao-alunos/adicionar')
+    setOpenAddModal(true)
+  }
+
+  const handleCloseAddModal = () => {
+    setOpenAddModal(false)
+  }
+
+  const handleAddSuccess = () => {
+    fetchInmates() // Refresh the list
   }
 
   const handleEditStudent = (inmate: Inmate) => {
@@ -493,6 +503,13 @@ export default function GestaoAlunosPage() {
         onSave={handleSaveEdit}
         onDelete={handleOpenDeleteDialog}
         submitting={submitting}
+      />
+
+      {/* Modal de Adicionar Aluno */}
+      <AddStudentModal
+        open={openAddModal}
+        onClose={handleCloseAddModal}
+        onSuccess={handleAddSuccess}
       />
 
       {/* Dialog de Confirmação de Exclusão */}

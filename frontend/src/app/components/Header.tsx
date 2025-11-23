@@ -109,7 +109,7 @@ export default function Header({ isAdmin }: HeaderProps) {
               variant="h6"
               sx={{ 
                 ml: 2,
-                color: isAdmin ? '#1F1D2B' : '#1F1D2B',
+                color: isAdmin ? '#ffffffff' : '#1F1D2B',
                 whiteSpace: 'nowrap',
                 fontWeight: 600,
                 transition: 'opacity 0.3s ease',
