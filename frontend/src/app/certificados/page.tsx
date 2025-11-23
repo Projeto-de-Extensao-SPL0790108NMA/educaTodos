@@ -157,11 +157,11 @@ export default function CertificadosPage() {
             borderRadius: 2,
           }}
         >
-          <TrophyIcon sx={{ fontSize: 80, color: '#ccc', mb: 2 }} />
-          <Typography variant="h6" gutterBottom>
+          <TrophyIcon sx={{ fontSize: 80, color: '#636363ff', mb: 2 }} />
+          <Typography variant="h6" gutterBottom color='#636363ff'>
             Você ainda não possui certificados
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body2" sx={{ mb: 3, color:'#666' }}>
             Complete cursos para receber seus certificados
           </Typography>
           <Button
@@ -170,6 +170,7 @@ export default function CertificadosPage() {
             sx={{
               backgroundColor: '#2C5F2D',
               '&:hover': { backgroundColor: '#1e4620' },
+              color:'#ffffff'
             }}
           >
             Explorar Cursos

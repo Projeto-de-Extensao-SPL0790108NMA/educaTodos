@@ -27,26 +27,89 @@ import { useRouter } from 'next/navigation';
 
 
 const Icons = {
-  HouseIcon: (props = {}) => (
-    <Box component="img" src={HouseIcon} alt="house" sx={{ width: 24, height: 'auto' }} {...props} />
+  HouseIcon: (isWhite = false) => (
+    <Box 
+      component="img" 
+      src={HouseIcon} 
+      alt="house" 
+      sx={{ 
+        width: 24, 
+        height: 'auto',
+        filter: isWhite ? 'brightness(0) invert(1)' : 'none'
+      }} 
+    />
   ),
-  HatIcon: (props = {}) => (
-    <Box component="img" src={HatIcon} alt="hat" sx={{ width: 24, height: 'auto' }} {...props} />
+  HatIcon: (isWhite = false) => (
+    <Box 
+      component="img" 
+      src={HatIcon} 
+      alt="hat" 
+      sx={{ 
+        width: 24, 
+        height: 'auto',
+        filter: isWhite ? 'brightness(0) invert(1)' : 'none'
+      }} 
+    />
   ),
-  GraphIcon: (props = {}) => (
-    <Box component="img" src={GraphIcon} alt="graph" sx={{ width: 24, height: 'auto' }} {...props} />
+  GraphIcon: (isWhite = false) => (
+    <Box 
+      component="img" 
+      src={GraphIcon} 
+      alt="graph" 
+      sx={{ 
+        width: 24, 
+        height: 'auto',
+        filter: isWhite ? 'brightness(0) invert(1)' : 'none'
+      }} 
+    />
   ),
-  BookIcon: (props = {}) => (
-    <Box component="img" src={BookIcon} alt="book" sx={{ width: 24, height: 'auto' }} {...props} />
+  BookIcon: (isWhite = false) => (
+    <Box 
+      component="img" 
+      src={BookIcon} 
+      alt="book" 
+      sx={{ 
+        width: 24, 
+        height: 'auto',
+        filter: isWhite ? 'brightness(0) invert(1)' : 'none'
+      }} 
+    />
   ),
-  ChevronLeftIcon: (props = {}) => (
-    <Box component="img" src={ChevronLeftIcon} alt="chevron-left" sx={{ width: 24, height: 'auto' }} {...props} />
+  ChevronLeftIcon: (isWhite = false) => (
+    <Box 
+      component="img" 
+      src={ChevronLeftIcon} 
+      alt="chevron-left" 
+      sx={{ 
+        width: 24, 
+        height: 'auto',
+        filter: isWhite ? 'brightness(0) invert(1)' : 'none'
+      }} 
+    />
   ),
-  UserAddIcon: (props = {}) => (
-    <Box component="img" src={UserAddIcon} alt="user-add" sx={{ width: 24, height: 'auto' }} {...props} />
+  UserAddIcon: (isWhite = false) => (
+    <Box 
+      component="img" 
+      src={UserAddIcon} 
+      alt="user-add" 
+      sx={{ 
+        width: 24, 
+        height: 'auto',
+        filter: isWhite ? 'brightness(0) invert(1)' : 'none'
+      }} 
+    />
   ),
-  CoursesIcon: (props = {}) => (
-    <Box component="img" src={CoursesIcon} alt="courses" sx={{ width: 24, height: 'auto' }} {...props} />
+  CoursesIcon: (isWhite = false) => (
+    <Box 
+      component="img" 
+      src={CoursesIcon} 
+      alt="courses" 
+      sx={{ 
+        width: 24, 
+        height: 'auto',
+        filter: isWhite ? 'brightness(0) invert(1)' : 'none'
+      }} 
+    />
   ),
 };
 
@@ -67,16 +130,16 @@ export default function Sidebar() {
 
   // Define menu items with paths for better routing
   const studentMenuItems = [
-    { text: "Início", icon: Icons.HouseIcon(), path: "/" },
-    { text: "Meus Certificados", icon: Icons.HatIcon(), path: "/certificados" },
-    { text: "Meus Cursos", icon: Icons.BookIcon(), path: "/cursando" },
-    { text: "Cursos", icon: Icons.CoursesIcon(), path: "/cursos" },
+    { text: "Início", icon: Icons.HouseIcon, path: "/" },
+    { text: "Meus Certificados", icon: Icons.HatIcon, path: "/certificados" },
+    { text: "Meus Cursos", icon: Icons.BookIcon, path: "/cursando" },
+    { text: "Cursos", icon: Icons.CoursesIcon, path: "/cursos" },
   ];
 
   const adminMenuItems = [
-    { text: "Visão Geral", icon: Icons.GraphIcon(), path: "/visao-geral" },
-    { text: "Gestão de Alunos", icon: Icons.HatIcon(), path: "/gestao-alunos" },
-    { text: "Gestão de Cursos", icon: Icons.BookIcon(), path: "/gestao-cursos" }
+    { text: "Visão Geral", icon: Icons.GraphIcon, path: "/visao-geral" },
+    { text: "Gestão de Alunos", icon: Icons.HatIcon, path: "/gestao-alunos" },
+    { text: "Gestão de Cursos", icon: Icons.BookIcon, path: "/gestao-cursos" }
   ];
 
   const menuItems = isAdmin ? adminMenuItems : studentMenuItems;
@@ -132,7 +195,7 @@ export default function Sidebar() {
                   color: isAdmin ? '#FFFFFF' : undefined,
                 }}
               >
-                {item.icon}
+                {typeof item.icon === 'function' ? item.icon(isAdmin) : item.icon}
               </ListItemIcon>
               {open && (
                 <ListItemText 
@@ -140,6 +203,11 @@ export default function Sidebar() {
                   sx={{
                     opacity: open ? 1 : 0,
                     transition: 'opacity 0.3s ease',
+                  }}
+                  primaryTypographyProps={{
+                    sx: {
+                      color: isAdmin ? '#FFFFFF' : 'inherit',
+                    }
                   }}
                 />
               )}
@@ -163,7 +231,7 @@ export default function Sidebar() {
             transition: 'transform 0.3s ease',
           }}
         >
-          {Icons.ChevronLeftIcon()}
+          {Icons.ChevronLeftIcon(isAdmin)}
         </IconButton>
       </Box> 
     </Drawer>
